@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ChatGPT</title>
+    
+    <!-- FAVICON OFICIAL SVG EN LA PESTAÑA -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23ffffff%22><path d=%22M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0813 4.779-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4952 4.4953zm-9.5416-4.5237a4.4755 4.4755 0 0 1-.5355-3.0076l.142.0858 4.7836 2.7582a.7948.7948 0 0 0 .7854 0l5.8341-3.3687v2.3325a.071.071 0 0 1-.0332.0617L9.851 19.467a4.504 4.504 0 0 1-6.1327-1.5615zM2.3432 8.6516a4.4755 4.4755 0 0 1 2.3409-1.9668v5.6728a.7948.7948 0 0 0 .3928.6813l5.8293 3.364-2.02 1.1685a.071.071 0 0 1-.0712 0l-4.8358-2.7915A4.504 4.504 0 0 1 2.3432 8.6516zm16.5963 3.8558L13.1054 9.1387v-2.3325a.071.071 0 0 1 .0332-.0617l4.8358-2.7915a4.504 4.504 0 0 1 6.6682 4.5691l-.142-.0858-4.7836-2.7582a.7948.7948 0 0 0-.7854 0zm2.3456-4.3045l-.1419.0813-4.779 2.7582a.7948.7948 0 0 0-.3927.6813v6.7369l-2.02-1.1686a.071.071 0 0 1-.038-.052V11.2a4.504 4.504 0 0 1 7.3716-3.4542zM12 13.6272L9.2065 12.0145 12 10.3971l2.7935 1.6174z/></svg>">
+
+    <!-- PWA Config -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#212121">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ChatGPT">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -51,8 +62,10 @@
         <div class="flex flex-col gap-1">
             <div class="flex items-center justify-between px-2 py-1 mb-2">
                 <div class="flex items-center gap-2 font-semibold text-base tracking-tight">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0813 4.779-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4952 4.4953zm-9.5416-4.5237a4.4755 4.4755 0 0 1-.5355-3.0076l.142.0858 4.7836 2.7582a.7948.7948 0 0 0 .7854 0l5.8341-3.3687v2.3325a.071.071 0 0 1-.0332.0617L9.851 19.467a4.504 4.504 0 0 1-6.1327-1.5615zM2.3432 8.6516a4.4755 4.4755 0 0 1 2.3409-1.9668v5.6728a.7948.7948 0 0 0 .3928.6813l5.8293 3.364-2.02 1.1685a.071.071 0 0 1-.0712 0l-4.8358-2.7915A4.504 4.504 0 0 1 2.3432 8.6516zm16.5963 3.8558L13.1054 9.1387v-2.3325a.071.071 0 0 1 .0332-.0617l4.8358-2.7915a4.504 4.504 0 0 1 6.6682 4.5691l-.142-.0858-4.7836-2.7582a.7948.7948 0 0 0-.7854 0zm2.3456-4.3045l-.1419.0813-4.779 2.7582a.7948.7948 0 0 0-.3927.6813v6.7369l-2.02-1.1686a.071.071 0 0 1-.038-.052V11.2a4.504 4.504 0 0 1 7.3716-3.4542zM12 13.6272L9.2065 12.0145 12 10.3971l2.7935 1.6174z"/>
+                    </svg>
                     ChatGPT
-                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-3.5 w-3.5 text-gpt-muted"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <button onclick="toggleSidebar()" class="hidden md:flex p-1.5 rounded-lg hover:bg-gpt-hover text-gpt-muted hover:text-gpt-text">
                     <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
@@ -66,22 +79,6 @@
             <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
                 <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-dasharray="2 2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 Imágenes
-            </button>
-            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
-                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                Complementos
-            </button>
-            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
-                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line><circle cx="12" cy="12" r="9"></circle></svg>
-                Ver planes y precio
-            </button>
-            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
-                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                Ayuda
-            </button>
-            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
-                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                Investiga a fondo
             </button>
             <button onclick="toggleSettings()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
                 <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.33.28 1.8.77l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33Z"></path></svg>
@@ -120,7 +117,7 @@
             <button onclick="toggleSettings()" class="md:hidden bg-white text-black font-medium px-3.5 py-1.5 rounded-full text-xs">Iniciar sesión</button>
         </header>
 
-        <!-- Área de Conversación con Scroll Global -->
+        <!-- Área de Conversación -->
         <div id="chat-container" class="flex-1 overflow-y-auto px-4 md:px-0 pb-44 pt-6 w-full">
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto px-4">
                 <h1 id="welcome-title" class="text-2xl font-semibold text-gpt-text mb-6 tracking-tight">¿Por dónde empezamos?</h1>
@@ -134,7 +131,6 @@
             
             <div class="w-[calc(100%-2rem)] max-w-3xl mx-auto flex flex-col items-center">
                 
-                <!-- Input Box -->
                 <div class="relative bg-gpt-input rounded-3xl border border-transparent focus-within:border-gray-500/50 shadow-lg flex items-center px-3.5 py-2.5 w-full">
                     <button class="text-gpt-muted hover:text-gpt-text p-1 flex-shrink-0 mr-2">
                         <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-5 w-5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -175,41 +171,66 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // --- WORD ENGINE ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+            });
+        }
+
         class WordEngine {
             constructor() {
                 this.realWordsPool = [
                     "PERRO", "GATO", "VACA", "CABALLO", "CERDO", "OVEJA", "CABRA", "GALLO", "GALLINA", "PATO", "GANSO", "PAVO", "CONEJO", "HURÓN", "HAMSTER", "RATÓN", "RATA", "ELEFANTE", "LEÓN", "TIGRE", "LEOPARDO", "GUEPARDO", "OSO", "LOBO", "ZORRO", "HIENA", "JIRAFA", "CEBRA", "HIPOPÓTAMO", "RINOCERONTE", "MONO", "CHIMPANCÉ", "GORILA", "ORANGUTÁN", "LÉMUR", "ARDILLA", "CASTOR", "MAPACHE", "ZORRILLO", "TEJÓN", "NUTRIA", "FOCA", "MORSA", "DELFÍN", "BALLENA", "ORCA", "TIBURÓN", "PEZ", "TRUCHA", "SALMÓN", "ATÚN", "SARDINA", "ANCHOA", "CALAMAR", "PULPO", "SEPIA", "CANGREJO", "LANGOSTA", "CAMARÓN", "MEJILLÓN", "OSTRA", "ALMEJA", "CARACOL", "BABOSA", "LOMBRIZ", "ABEJA", "AVISPA", "ABEJORRO", "HORMIGA", "MARIPOSA", "POLILLA", "MOSCA", "MOSQUITO", "GRILLO", "SALTAMONTES", "CIGARRA", "ESCARABAJO", "MARIQUITA", "ARAÑA", "ESCORPIÓN", "CIEMPIÉS", "MILPIÉS", "GARRAPATA", "ÁCARO", "TORTUGA", "LAGARTO", "IGUANA", "CAMALEÓN", "GECKO", "SERPIENTE", "VÍBORA", "COBRA", "BOA", "COCODRILO", "CAIMÁN", "RANA", "SAPO", "TRITÓN", "SALAMANDRA", "ÁGUILA", "HALCÓN", "BÚHO", "LECHUZA", "CÓNDOR", "BUITRE", "PALOMA", "GORRIÓN", "RUISEÑOR", "CANARIO", "LORO", "GUACAMAYO", "CACATÚA", "PINGÜINO", "AVESTRUZ", "EMÚ", "KIWI", "COLIBRÍ", "CIGÜEÑA", "FLAMENCO", "PELÍCANO", "GAVIOTA", "CISNE", "MURCIÉLAGO", "TOPO", "ERIZO", "VENADO", "CIERVO", "ALCE", "RENO", "BÚFALO", "BISONTE", "LLAMA", "ALPACA", "VICUÑA", "CAMELLO", "DROMEDARIO", "CANGURO", "KOALA", "WOMBAT", "ORNITORRINCO", "EQUIDNA", "TAPIR", "OKAPI", "PANGOLÍN", "ARMADILLO", "PEREZOZO", "TUCÁN", "QUETZAL", "GARZA", "IBIS", "CORNEJA", "CUERVO", "URRACA", "PAPAGAYO", "PERICO", "COTORRA", "MEDUSA", "CORAL", "ESPONJA", "NARVAL", "BELUGA", "CACHALOTE", "ASNO", "BURRO", "MULA", "YAK", "VISÓN", "COMADREJA", "GLOTÓN", "PANDA", "ABRIR", "ABRAZAR", "ABURRIR", "ACABAR", "ACARICIAR", "ACERCAR", "ACEPTAR", "ACOMPAÑAR", "ACONSEJAR", "ACORDAR", "ACOSTAR", "ACTUAR", "ACUDIR", "ACUSAR", "ADAPTAR", "ADIVINAR", "ADQUIRIR", "ADVERTIR", "AFIRMAR", "AGARRAR", "AGITAR", "AGOTAR", "AGRADECER", "AGREGAR", "AGUANTAR", "AHORRAR", "AJUSTAR", "ALARGAR", "ALEGRAR", "ALEJAR", "ALIVIAR", "ALQUILAR", "AMAR", "AMENAZAR", "AMPLIAR", "ANALIZAR", "ANDAR", "ANIMAR", "ANULAR", "APAGAR", "APARECER", "APARTAR", "APLAUDIR", "APLICAR", "APOYAR", "APRECIAR", "APRENDER", "APRETAR", "APROBAR", "APUNTAR", "ARDER", "ARMAR", "ARRASTRAR", "ARREGLAR", "ARROJAR", "ASAR", "ASEGURAR", "ASISTIR", "ASOCIAR", "ASOMAR", "ASUMIR", "ASUSTAR", "ATACAR", "ATAR", "ATENDER", "ATRAER", "ATRAPAR", "ATRAVESAR", "AUMENTAR", "AUTORIZAR", "AVANZAR", "AVISAR", "AYUDAR", "BAILAR", "BAJAR", "BAÑAR", "BARRER", "BATIR", "BEBER", "BESAR", "BOTAR", "BRILLAR", "BRINCAR", "BUSCAR", "CABER", "CAER", "CALCULAR", "CALENTAR", "CALMAR", "CAMBIAR", "CAMINAR", "CANCELAR", "CANTAR", "CAPTURAR", "CARGAR", "CASAR", "CASTIGAR", "CAUSAR", "CAZAR", "CELEBRAR", "CENAR", "CENTRAR", "CEPILLAR", "CERRAR", "CHOCAR", "COCINAR", "COGER", "COLABORAR", "COLOCAR", "COLGAR", "COMBATIR", "COMER", "COMENZAR", "COMENTAR", "COMPARAR", "COMPARTIR", "COMPETIR", "COMPLETAR", "COMPRAR", "COMPRENDER", "COMPROBAR", "COMUNICAR", "CONCEDER", "CONCLUIR", "CONDUCIR", "CONECTAR", "CONFIAR", "CONFIRMAR", "CONOCER", "CONSEGUIR", "CONSERVAR", "CONSIDERAR", "CONSTRUIR", "CONSUMIR", "CONTESTAR", "CONTINUAR", "CONTROLAR", "CONVENCER", "CONVERTIR", "COPIAR", "CORREGIR", "CORTAR", "COSER", "COSTAR", "CREAR", "CRECER", "CREER", "CRITICAR", "CRUZAR", "CUBRIR", "CUIDAR", "CULPAR", "CUMPLIR", "CURAR", "DAÑAR", "DAR", "DEBER", "DECIDIR", "DECIR", "DECLARAR", "DEDICAR", "DEFENDER", "DEFINIR", "DEJAR", "DEMANDAR", "DEMOSTRAR", "DERROTAR", "DESEAR", "DESPERTAR", "DESTACAR", "DESTRUIR", "DETENER", "DEVOLVER", "DIBUJAR", "DIRIGIR", "DISCUTIR", "DISEÑAR", "DISFRUTAR", "DIVERTIR", "DIVIDIR", "DOBLAR", "DORMIR", "DUDAR", "DURAR", "EDUCAR", "ELEGIR", "ELEVAR", "ELIMINAR", "EMPEZAR", "EMPLEAR", "EMPUJAR", "ENCENDER", "ENCONTRAR", "ENCANTAR", "ENTENDER", "ENTRAR", "ENTREGAR", "ENVIAR", "ESCAPAR", "ESCOGER", "ESCONDER", "ESCRIBIR", "ESCUCHAR", "ESPERAR", "ESTABLECER", "ESTAR", "ESTUDIAR", "EVALUAR", "EVITAR", "EXAMINAR", "EXPLICAR", "EXPONER", "EXPRESAR", "EXTENDER", "FALTAR", "FASCINAR", "FELICITAR", "FIJAR", "FIRMAR", "FORJAR", "FORMAR", "FRACASAR", "GANAR", "GASTAR", "GENERAR", "GIRAR", "GOLPEAR", "GRABAR", "GRITAR", "GUARDAR", "GUIAR", "GUSTAR", "HABLAR", "HACER", "HALLAR", "HELAR", "HERIR", "HUIR", "IDENTIFICAR", "IMAGINAR", "IMPORTAR", "INICIAR", "INSCRIBIR", "INSTALAR", "INTENTAR", "INTERESAR", "INTERPRETAR", "INVENTAR", "INVERTIR", "INVESTIGAR", "INVITAR", "JUGAR", "JURAR", "LANZAR", "LAVAR", "LEER", "LEVANTAR", "LIMPIAR", "LLAMAR", "LLEGAR", "LLENAR", "LLEVAR", "LLORAR", "LOGRAR", "LUCIR", "MANTENER", "MARCAR", "MATAR", "MEDIR", "MEJORAR", "MENTIR", "MERECER", "MIRAR", "MOSTRAR", "MOVER", "NACER", "NADAR", "NAUFRAGAR", "NAVEGAR", "NECESITAR", "NEGAR", "NOTAR", "NUTRIR", "OBEDECER", "OBLIGAR", "OBSERVAR", "OBTENER", "OCUPAR", "OFERTAR", "OÍR", "OLVIDAR", "OPERAR", "OPINAR", "ORGANIZAR", "ORIENTAR", "ORIGINAR", "OTORGAR", "PAGAR", "PARAR", "PARECER", "PARTIR", "PASEAR", "PASAR", "PEDIR", "PEGAR", "PENSAR", "PERDER", "PERDONAR", "PERMITIR", "PESAR", "PINTAR", "PLANEAR", "PLANIFICAR", "POBLAR", "PODER", "PONER", "PRACTICAR", "PREGUNTAR", "PREPARAR", "PRESENTAR", "PROBAR", "PRODUCIR", "PROTEGER", "PROMOVER", "QUEDAR", "QUERER", "QUEMAR", "REALIZAR", "RECIBIR", "RECONOCER", "RECORDAR", "REDUCIR", "REEMPLAZAR", "REGALAR", "REGRESAR", "REÍR", "RELACIONAR", "RELAJAR", "REMOVER", "REPARAR", "REPETIR", "RESPONDER", "RESULTAR", "REUNIR", "REVELAR", "ROBAR", "ROMPER", "SABER", "SALIR", "SALUDAR", "SALVAR", "SEGUIR", "SELECCIONAR", "SEÑALAR", "SENTAR", "SENTIR", "SEPARAR", "SER", "SERVIR", "SIGNIFICAR", "SITUAR", "SOÑAR", "SONREÍR", "SOPORTAR", "SORPRENDER", "SUBIR", "SUFRIR", "SUGERIR", "SUPERAR", "SUPONER", "SUSPENDER", "TEMER", "TERMINAR", "TOCAR", "TOMAR", "TRABAJAR", "TRADUCIR", "TRAER", "TRATAR", "UNIR", "USAR", "UTILIZAR", "VALORAR", "VENDER", "VENIR", "VER", "VIAJAR", "VIGILAR", "VISITAR", "VIVIR", "VOLVER"
                 ];
-            }
-
-            generateSingleWord(targetLetter, position) {
-                let index = Math.max(0, position - 1);
-                let target = targetLetter.toUpperCase();
-
-                let validMatches = this.realWordsPool.filter(w => w.length > index && w.charAt(index) === target);
-                if (validMatches.length > 0) {
-                    return validMatches[Math.floor(Math.random() * validMatches.length)];
-                }
-
-                let core = ("CASA" + target + "TELA").toUpperCase();
-                if (core.length <= index) core += target.repeat(index - core.length + 2);
-                return core.substring(0, index) + target + core.substring(index + 1);
+                this.suffixes = ["CIÓN", "DAD", "MENTE", "ABLE", "ISMO", "ERO", "ISTA", "ANTE", "OSO", "IVO", "DOR", "ERA"];
+                this.prefixes = ["DES", "SUB", "RE", "PRE", "IN", "TRANS", "INTER", "ANTE"];
             }
 
             generateBatchInstant(targetLetter, position, total = 1000) {
-                const words = [];
-                for (let i = 0; i < total; i++) {
-                    words.push(this.generateSingleWord(targetLetter, position));
+                const index = Math.max(0, position - 1);
+                const target = targetLetter.toUpperCase();
+                const uniqueSet = new Set();
+                
+                let validMatches = this.realWordsPool.filter(w => w.length > index && w.charAt(index) === target);
+                validMatches = validMatches.sort(() => Math.random() - 0.5);
+
+                for (let word of validMatches) {
+                    uniqueSet.add(word);
+                    if (uniqueSet.size >= total) break;
                 }
-                return words;
+
+                let counter = 0;
+                while (uniqueSet.size < total) {
+                    counter++;
+                    let baseWord = this.realWordsPool[counter % this.realWordsPool.length];
+                    let suf = this.suffixes[counter % this.suffixes.length];
+                    let pref = this.prefixes[counter % this.prefixes.length];
+
+                    let candidate = (pref + baseWord + suf).toUpperCase();
+                    if (candidate.length <= index) {
+                        candidate = candidate + target.repeat(index - candidate.length + 2);
+                    }
+                    candidate = candidate.substring(0, index) + target + candidate.substring(index + 1);
+                    uniqueSet.add(candidate);
+                }
+
+                return Array.from(uniqueSet);
             }
 
             updateHiddenWords(currentList, visibleRange, targetLetter, position) {
+                const newList = this.generateBatchInstant(targetLetter, position, currentList.length);
                 const updatedList = [...currentList];
+
+                let newIndex = 0;
                 for (let i = 0; i < updatedList.length; i++) {
                     if (i < visibleRange.start || i > visibleRange.end) {
-                        updatedList[i] = this.generateSingleWord(targetLetter, position);
+                        while (newIndex < newList.length && currentList.includes(newList[newIndex])) {
+                            newIndex++;
+                        }
+                        if (newIndex < newList.length) {
+                            updatedList[i] = newList[newIndex];
+                            newIndex++;
+                        }
                     }
                 }
                 return updatedList;
@@ -218,11 +239,10 @@
 
         window.wordEngineInstance = new WordEngine();
 
-        // --- GLOBAL SCROLL MANAGEMENT ---
         class GlobalScrollList {
             constructor(containerElement, scrollParent) {
                 this.container = containerElement;
-                this.scrollParent = scrollParent; // Contenedor global (#chat-container)
+                this.scrollParent = scrollParent;
                 this.itemHeight = 28;
                 this.buffer = 20;
                 this.items = [];
@@ -258,14 +278,11 @@
             getVisibleRange() {
                 const containerTop = this.container.getBoundingClientRect().top;
                 const scrollParentTop = this.scrollParent.getBoundingClientRect().top;
-                
-                // Distancia desde el inicio de la lista respecto al viewport visible del chat
                 const relativeScrollTop = Math.max(0, scrollParentTop - containerTop);
                 const viewportHeight = this.scrollParent.clientHeight;
 
                 const startIndex = Math.max(0, Math.floor(relativeScrollTop / this.itemHeight) - this.buffer);
                 const endIndex = Math.min(this.items.length - 1, Math.floor((relativeScrollTop + viewportHeight) / this.itemHeight) + this.buffer);
-                
                 return { start: startIndex, end: endIndex };
             }
 
@@ -288,7 +305,6 @@
             }
         }
 
-        // --- STATE & STEALTH CONTROLLER ---
         window.WordMentalismState = {
             active: false,
             targetWord: "",
@@ -351,7 +367,6 @@
 
         window.stealthControllerInstance = new StealthController();
 
-        // --- MAIN APP ---
         document.addEventListener('DOMContentLoaded', () => {
             const textarea = document.getElementById('user-input');
             const sendBtn = document.getElementById('send-btn');
@@ -463,7 +478,11 @@
                 
                 appendMessage('assistant', `
                     <div class="flex items-center gap-2">
-                        <div class="w-3.5 h-3.5 rounded-full bg-blue-600 animate-pulse"></div>
+                        <div class="w-4 h-4 text-white animate-pulse">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0813 4.779-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4952 4.4953zm-9.5416-4.5237a4.4755 4.4755 0 0 1-.5355-3.0076l.142.0858 4.7836 2.7582a.7948.7948 0 0 0 .7854 0l5.8341-3.3687v2.3325a.071.071 0 0 1-.0332.0617L9.851 19.467a4.504 4.504 0 0 1-6.1327-1.5615zM2.3432 8.6516a4.4755 4.4755 0 0 1 2.3409-1.9668v5.6728a.7948.7948 0 0 0 .3928.6813l5.8293 3.364-2.02 1.1685a.071.071 0 0 1-.0712 0l-4.8358-2.7915A4.504 4.504 0 0 1 2.3432 8.6516zm16.5963 3.8558L13.1054 9.1387v-2.3325a.071.071 0 0 1 .0332-.0617l4.8358-2.7915a4.504 4.504 0 0 1 6.6682 4.5691l-.142-.0858-4.7836-2.7582a.7948.7948 0 0 0-.7854 0zm2.3456-4.3045l-.1419.0813-4.779 2.7582a.7948.7948 0 0 0-.3927.6813v6.7369l-2.02-1.1686a.071.071 0 0 1-.038-.052V11.2a4.504 4.504 0 0 1 7.3716-3.4542zM12 13.6272L9.2065 12.0145 12 10.3971l2.7935 1.6174z"/>
+                            </svg>
+                        </div>
                         <span class="text-gpt-text">Pensando...</span>
                     </div>
                 `, assistantBubbleId);
@@ -479,7 +498,6 @@
                     `;
 
                     const virtualScrollWrapper = bubbleContainer.querySelector('div:last-child');
-                    // Usamos GlobalScrollList pasando el contenedor del chat para scroll nativo
                     const vs = new GlobalScrollList(virtualScrollWrapper, chatContainer);
                     vs.setItems(wordsArray);
 
