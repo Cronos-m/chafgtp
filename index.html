@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChatGPT</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gpt: {
+                            sidebar: '#171717',
+                            main: '#212121',
+                            hover: '#2a2a2a',
+                            border: '#2f2f2f',
+                            input: '#2f2f2f',
+                            text: '#ececec',
+                            muted: '#b4b4b4',
+                            bubbleUser: '#001a70'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+            background-color: #212121;
+            color: #ececec;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+    </style>
+</head>
+<body class="h-screen w-screen flex overflow-hidden">
+
+    <!-- OVERLAY MÓVIL PARA EL MENÚ LATERAL -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 md:hidden hidden transition-opacity"></div>
+
+    <!-- BARRA LATERAL -->
+    <aside id="sidebar" class="bg-gpt-sidebar w-[260px] flex-shrink-0 flex flex-col justify-between transition-transform duration-300 z-40 md:relative fixed inset-y-0 left-0 -translate-x-full md:translate-x-0 border-r border-gpt-border p-3 select-none">
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center justify-between px-2 py-1 mb-2">
+                <div class="flex items-center gap-2 font-semibold text-base tracking-tight">
+                    ChatGPT
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-3.5 w-3.5 text-gpt-muted"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <button onclick="toggleSidebar()" class="hidden md:flex p-1.5 rounded-lg hover:bg-gpt-hover text-gpt-muted hover:text-gpt-text">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                </button>
+            </div>
+
+            <button onclick="newChat()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full font-medium">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Chat nuevo
+            </button>
+            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-dasharray="2 2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                Imágenes
+            </button>
+            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Complementos
+            </button>
+            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line><circle cx="12" cy="12" r="9"></circle></svg>
+                Ver planes y precio
+            </button>
+            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Ayuda
+            </button>
+            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                Investiga a fondo
+            </button>
+            <button onclick="toggleSettings()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.33.28 1.8.77l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33Z"></path></svg>
+                Configuración
+            </button>
+        </div>
+
+        <div class="border-t border-gpt-border pt-3 pb-2 flex flex-col gap-3">
+            <div class="px-2">
+                <p class="text-sm font-semibold text-gpt-text mb-1">Obtén respuestas personalizadas</p>
+                <p class="text-xs text-gpt-muted leading-relaxed">Inicia sesión para obtener respuestas basadas en chats guardados.</p>
+            </div>
+            <button onclick="toggleSettings()" class="w-full bg-gpt-text text-black font-medium py-2.5 px-4 rounded-full text-sm hover:opacity-95 transition-opacity text-center">
+                Iniciar sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="flex-1 flex flex-col h-full w-full relative bg-gpt-main overflow-hidden">
+        
+        <!-- Header superior -->
+        <header class="flex items-center justify-between px-4 py-3 bg-gpt-main z-10 flex-shrink-0 w-full">
+            <button onclick="toggleSidebar()" class="md:hidden p-2 -ml-2 text-gpt-text hover:bg-gpt-hover rounded-lg">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-6 w-6"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+
+            <span class="md:hidden font-semibold text-base">ChatGPT</span>
+            <div class="md:hidden w-6"></div>
+
+            <div class="hidden md:flex items-center gap-3 ml-auto">
+                <button onclick="toggleSettings()" class="bg-white text-black font-medium px-4 py-2 rounded-full text-sm hover:opacity-95 transition-opacity">Iniciar sesión</button>
+                <button onclick="toggleSettings()" class="bg-[#2f2f2f] border border-gpt-border text-gpt-text font-medium px-4 py-2 rounded-full text-sm hover:bg-gpt-hover transition-colors">Regístrate gratis</button>
+            </div>
+
+            <button onclick="toggleSettings()" class="md:hidden bg-white text-black font-medium px-3.5 py-1.5 rounded-full text-xs">Iniciar sesión</button>
+        </header>
+
+        <!-- Área de Conversación con Scroll Global -->
+        <div id="chat-container" class="flex-1 overflow-y-auto px-4 md:px-0 pb-44 pt-6 w-full">
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto px-4">
+                <h1 id="welcome-title" class="text-2xl font-semibold text-gpt-text mb-6 tracking-tight">¿Por dónde empezamos?</h1>
+            </div>
+
+            <div id="messages-list" class="flex flex-col space-y-6 max-w-3xl mx-auto w-full hidden"></div>
+        </div>
+
+        <!-- BARRA INFERIOR DE ESCRITURA -->
+        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-gpt-main via-gpt-main pt-6 pb-5 z-20 flex flex-col items-center justify-center px-4">
+            
+            <div class="w-[calc(100%-2rem)] max-w-3xl mx-auto flex flex-col items-center">
+                
+                <!-- Input Box -->
+                <div class="relative bg-gpt-input rounded-3xl border border-transparent focus-within:border-gray-500/50 shadow-lg flex items-center px-3.5 py-2.5 w-full">
+                    <button class="text-gpt-muted hover:text-gpt-text p-1 flex-shrink-0 mr-2">
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-5 w-5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+
+                    <textarea id="user-input" rows="1" placeholder="Preguntar a ChatGPT" class="w-full bg-transparent resize-none outline-none text-gpt-text text-sm max-h-48 leading-relaxed placeholder-gpt-muted self-center pt-0.5"></textarea>
+                    
+                    <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                        <button class="text-gpt-muted hover:text-gpt-text p-1">
+                            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-5 w-5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                        </button>
+                        <button id="send-btn" onclick="sendMessage()" class="bg-blue-600 text-white p-2 rounded-full hover:opacity-90 disabled:bg-[#383838] disabled:text-gpt-muted transition-all flex items-center justify-center w-8 h-8" disabled>
+                            <svg id="btn-icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="footer-text" class="text-center text-[11px] text-gpt-muted/70 mt-3 w-full">
+                    ChatGPT es IA. Al usarlo, aceptas los <a href="#" class="underline">Términos</a> y la <a href="#" class="underline">Política de privacidad</a>.<span id="magic-indicator" class="inline"></span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal de Configuración -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-[#2f2f2f] border border-gpt-border p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-2 text-gpt-text">Configurar API Key de IA</h3>
+            <p class="text-sm text-gpt-muted mb-4">Ingresa tu API Key para habilitar respuestas reales de IA en modo normal.</p>
+            <input type="password" id="api-key-input" placeholder="sk-..." class="w-full bg-[#212121] border border-gpt-border rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-500 mb-5 text-gpt-text">
+            <div class="flex justify-end gap-3">
+                <button onclick="toggleSettings()" class="px-4 py-2 rounded-xl text-sm hover:bg-gpt-hover text-gpt-muted">Cancelar</button>
+                <button onclick="saveApiKey()" class="px-4 py-2 rounded-xl text-sm bg-white text-black font-medium hover:opacity-95">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // --- WORD ENGINE ---
+        class WordEngine {
+            constructor() {
+                this.realWordsPool = [
+                    "PERRO", "GATO", "VACA", "CABALLO", "CERDO", "OVEJA", "CABRA", "GALLO", "GALLINA", "PATO", "GANSO", "PAVO", "CONEJO", "HURÓN", "HAMSTER", "RATÓN", "RATA", "ELEFANTE", "LEÓN", "TIGRE", "LEOPARDO", "GUEPARDO", "OSO", "LOBO", "ZORRO", "HIENA", "JIRAFA", "CEBRA", "HIPOPÓTAMO", "RINOCERONTE", "MONO", "CHIMPANCÉ", "GORILA", "ORANGUTÁN", "LÉMUR", "ARDILLA", "CASTOR", "MAPACHE", "ZORRILLO", "TEJÓN", "NUTRIA", "FOCA", "MORSA", "DELFÍN", "BALLENA", "ORCA", "TIBURÓN", "PEZ", "TRUCHA", "SALMÓN", "ATÚN", "SARDINA", "ANCHOA", "CALAMAR", "PULPO", "SEPIA", "CANGREJO", "LANGOSTA", "CAMARÓN", "MEJILLÓN", "OSTRA", "ALMEJA", "CARACOL", "BABOSA", "LOMBRIZ", "ABEJA", "AVISPA", "ABEJORRO", "HORMIGA", "MARIPOSA", "POLILLA", "MOSCA", "MOSQUITO", "GRILLO", "SALTAMONTES", "CIGARRA", "ESCARABAJO", "MARIQUITA", "ARAÑA", "ESCORPIÓN", "CIEMPIÉS", "MILPIÉS", "GARRAPATA", "ÁCARO", "TORTUGA", "LAGARTO", "IGUANA", "CAMALEÓN", "GECKO", "SERPIENTE", "VÍBORA", "COBRA", "BOA", "COCODRILO", "CAIMÁN", "RANA", "SAPO", "TRITÓN", "SALAMANDRA", "ÁGUILA", "HALCÓN", "BÚHO", "LECHUZA", "CÓNDOR", "BUITRE", "PALOMA", "GORRIÓN", "RUISEÑOR", "CANARIO", "LORO", "GUACAMAYO", "CACATÚA", "PINGÜINO", "AVESTRUZ", "EMÚ", "KIWI", "COLIBRÍ", "CIGÜEÑA", "FLAMENCO", "PELÍCANO", "GAVIOTA", "CISNE", "MURCIÉLAGO", "TOPO", "ERIZO", "VENADO", "CIERVO", "ALCE", "RENO", "BÚFALO", "BISONTE", "LLAMA", "ALPACA", "VICUÑA", "CAMELLO", "DROMEDARIO", "CANGURO", "KOALA", "WOMBAT", "ORNITORRINCO", "EQUIDNA", "TAPIR", "OKAPI", "PANGOLÍN", "ARMADILLO", "PEREZOZO", "TUCÁN", "QUETZAL", "GARZA", "IBIS", "CORNEJA", "CUERVO", "URRACA", "PAPAGAYO", "PERICO", "COTORRA", "MEDUSA", "CORAL", "ESPONJA", "NARVAL", "BELUGA", "CACHALOTE", "ASNO", "BURRO", "MULA", "YAK", "VISÓN", "COMADREJA", "GLOTÓN", "PANDA", "ABRIR", "ABRAZAR", "ABURRIR", "ACABAR", "ACARICIAR", "ACERCAR", "ACEPTAR", "ACOMPAÑAR", "ACONSEJAR", "ACORDAR", "ACOSTAR", "ACTUAR", "ACUDIR", "ACUSAR", "ADAPTAR", "ADIVINAR", "ADQUIRIR", "ADVERTIR", "AFIRMAR", "AGARRAR", "AGITAR", "AGOTAR", "AGRADECER", "AGREGAR", "AGUANTAR", "AHORRAR", "AJUSTAR", "ALARGAR", "ALEGRAR", "ALEJAR", "ALIVIAR", "ALQUILAR", "AMAR", "AMENAZAR", "AMPLIAR", "ANALIZAR", "ANDAR", "ANIMAR", "ANULAR", "APAGAR", "APARECER", "APARTAR", "APLAUDIR", "APLICAR", "APOYAR", "APRECIAR", "APRENDER", "APRETAR", "APROBAR", "APUNTAR", "ARDER", "ARMAR", "ARRASTRAR", "ARREGLAR", "ARROJAR", "ASAR", "ASEGURAR", "ASISTIR", "ASOCIAR", "ASOMAR", "ASUMIR", "ASUSTAR", "ATACAR", "ATAR", "ATENDER", "ATRAER", "ATRAPAR", "ATRAVESAR", "AUMENTAR", "AUTORIZAR", "AVANZAR", "AVISAR", "AYUDAR", "BAILAR", "BAJAR", "BAÑAR", "BARRER", "BATIR", "BEBER", "BESAR", "BOTAR", "BRILLAR", "BRINCAR", "BUSCAR", "CABER", "CAER", "CALCULAR", "CALENTAR", "CALMAR", "CAMBIAR", "CAMINAR", "CANCELAR", "CANTAR", "CAPTURAR", "CARGAR", "CASAR", "CASTIGAR", "CAUSAR", "CAZAR", "CELEBRAR", "CENAR", "CENTRAR", "CEPILLAR", "CERRAR", "CHOCAR", "COCINAR", "COGER", "COLABORAR", "COLOCAR", "COLGAR", "COMBATIR", "COMER", "COMENZAR", "COMENTAR", "COMPARAR", "COMPARTIR", "COMPETIR", "COMPLETAR", "COMPRAR", "COMPRENDER", "COMPROBAR", "COMUNICAR", "CONCEDER", "CONCLUIR", "CONDUCIR", "CONECTAR", "CONFIAR", "CONFIRMAR", "CONOCER", "CONSEGUIR", "CONSERVAR", "CONSIDERAR", "CONSTRUIR", "CONSUMIR", "CONTESTAR", "CONTINUAR", "CONTROLAR", "CONVENCER", "CONVERTIR", "COPIAR", "CORREGIR", "CORTAR", "COSER", "COSTAR", "CREAR", "CRECER", "CREER", "CRITICAR", "CRUZAR", "CUBRIR", "CUIDAR", "CULPAR", "CUMPLIR", "CURAR", "DAÑAR", "DAR", "DEBER", "DECIDIR", "DECIR", "DECLARAR", "DEDICAR", "DEFENDER", "DEFINIR", "DEJAR", "DEMANDAR", "DEMOSTRAR", "DERROTAR", "DESEAR", "DESPERTAR", "DESTACAR", "DESTRUIR", "DETENER", "DEVOLVER", "DIBUJAR", "DIRIGIR", "DISCUTIR", "DISEÑAR", "DISFRUTAR", "DIVERTIR", "DIVIDIR", "DOBLAR", "DORMIR", "DUDAR", "DURAR", "EDUCAR", "ELEGIR", "ELEVAR", "ELIMINAR", "EMPEZAR", "EMPLEAR", "EMPUJAR", "ENCENDER", "ENCONTRAR", "ENCANTAR", "ENTENDER", "ENTRAR", "ENTREGAR", "ENVIAR", "ESCAPAR", "ESCOGER", "ESCONDER", "ESCRIBIR", "ESCUCHAR", "ESPERAR", "ESTABLECER", "ESTAR", "ESTUDIAR", "EVALUAR", "EVITAR", "EXAMINAR", "EXPLICAR", "EXPONER", "EXPRESAR", "EXTENDER", "FALTAR", "FASCINAR", "FELICITAR", "FIJAR", "FIRMAR", "FORJAR", "FORMAR", "FRACASAR", "GANAR", "GASTAR", "GENERAR", "GIRAR", "GOLPEAR", "GRABAR", "GRITAR", "GUARDAR", "GUIAR", "GUSTAR", "HABLAR", "HACER", "HALLAR", "HELAR", "HERIR", "HUIR", "IDENTIFICAR", "IMAGINAR", "IMPORTAR", "INICIAR", "INSCRIBIR", "INSTALAR", "INTENTAR", "INTERESAR", "INTERPRETAR", "INVENTAR", "INVERTIR", "INVESTIGAR", "INVITAR", "JUGAR", "JURAR", "LANZAR", "LAVAR", "LEER", "LEVANTAR", "LIMPIAR", "LLAMAR", "LLEGAR", "LLENAR", "LLEVAR", "LLORAR", "LOGRAR", "LUCIR", "MANTENER", "MARCAR", "MATAR", "MEDIR", "MEJORAR", "MENTIR", "MERECER", "MIRAR", "MOSTRAR", "MOVER", "NACER", "NADAR", "NAUFRAGAR", "NAVEGAR", "NECESITAR", "NEGAR", "NOTAR", "NUTRIR", "OBEDECER", "OBLIGAR", "OBSERVAR", "OBTENER", "OCUPAR", "OFERTAR", "OÍR", "OLVIDAR", "OPERAR", "OPINAR", "ORGANIZAR", "ORIENTAR", "ORIGINAR", "OTORGAR", "PAGAR", "PARAR", "PARECER", "PARTIR", "PASEAR", "PASAR", "PEDIR", "PEGAR", "PENSAR", "PERDER", "PERDONAR", "PERMITIR", "PESAR", "PINTAR", "PLANEAR", "PLANIFICAR", "POBLAR", "PODER", "PONER", "PRACTICAR", "PREGUNTAR", "PREPARAR", "PRESENTAR", "PROBAR", "PRODUCIR", "PROTEGER", "PROMOVER", "QUEDAR", "QUERER", "QUEMAR", "REALIZAR", "RECIBIR", "RECONOCER", "RECORDAR", "REDUCIR", "REEMPLAZAR", "REGALAR", "REGRESAR", "REÍR", "RELACIONAR", "RELAJAR", "REMOVER", "REPARAR", "REPETIR", "RESPONDER", "RESULTAR", "REUNIR", "REVELAR", "ROBAR", "ROMPER", "SABER", "SALIR", "SALUDAR", "SALVAR", "SEGUIR", "SELECCIONAR", "SEÑALAR", "SENTAR", "SENTIR", "SEPARAR", "SER", "SERVIR", "SIGNIFICAR", "SITUAR", "SOÑAR", "SONREÍR", "SOPORTAR", "SORPRENDER", "SUBIR", "SUFRIR", "SUGERIR", "SUPERAR", "SUPONER", "SUSPENDER", "TEMER", "TERMINAR", "TOCAR", "TOMAR", "TRABAJAR", "TRADUCIR", "TRAER", "TRATAR", "UNIR", "USAR", "UTILIZAR", "VALORAR", "VENDER", "VENIR", "VER", "VIAJAR", "VIGILAR", "VISITAR", "VIVIR", "VOLVER"
+                ];
+            }
+
+            generateSingleWord(targetLetter, position) {
+                let index = Math.max(0, position - 1);
+                let target = targetLetter.toUpperCase();
+
+                let validMatches = this.realWordsPool.filter(w => w.length > index && w.charAt(index) === target);
+                if (validMatches.length > 0) {
+                    return validMatches[Math.floor(Math.random() * validMatches.length)];
+                }
+
+                let core = ("CASA" + target + "TELA").toUpperCase();
+                if (core.length <= index) core += target.repeat(index - core.length + 2);
+                return core.substring(0, index) + target + core.substring(index + 1);
+            }
+
+            generateBatchInstant(targetLetter, position, total = 1000) {
+                const words = [];
+                for (let i = 0; i < total; i++) {
+                    words.push(this.generateSingleWord(targetLetter, position));
+                }
+                return words;
+            }
+
+            updateHiddenWords(currentList, visibleRange, targetLetter, position) {
+                const updatedList = [...currentList];
+                for (let i = 0; i < updatedList.length; i++) {
+                    if (i < visibleRange.start || i > visibleRange.end) {
+                        updatedList[i] = this.generateSingleWord(targetLetter, position);
+                    }
+                }
+                return updatedList;
+            }
+        }
+
+        window.wordEngineInstance = new WordEngine();
+
+        // --- GLOBAL SCROLL MANAGEMENT ---
+        class GlobalScrollList {
+            constructor(containerElement, scrollParent) {
+                this.container = containerElement;
+                this.scrollParent = scrollParent; // Contenedor global (#chat-container)
+                this.itemHeight = 28;
+                this.buffer = 20;
+                this.items = [];
+
+                this.container.style.position = 'relative';
+                this.container.style.width = '100%';
+
+                this.contentSpacer = document.createElement('div');
+                this.contentSpacer.style.position = 'absolute';
+                this.contentSpacer.style.top = '0';
+                this.contentSpacer.style.left = '0';
+                this.contentSpacer.style.right = '0';
+                this.container.appendChild(this.contentSpacer);
+
+                this.visibleContent = document.createElement('div');
+                this.visibleContent.style.position = 'absolute';
+                this.visibleContent.style.top = '0';
+                this.visibleContent.style.left = '0';
+                this.visibleContent.style.right = '0';
+                this.container.appendChild(this.visibleContent);
+
+                this.scrollParent.addEventListener('scroll', () => this.render(), { passive: true });
+            }
+
+            setItems(items) {
+                this.items = items;
+                const totalHeight = this.items.length * this.itemHeight;
+                this.contentSpacer.style.height = `${totalHeight}px`;
+                this.container.style.height = `${totalHeight}px`;
+                this.render();
+            }
+
+            getVisibleRange() {
+                const containerTop = this.container.getBoundingClientRect().top;
+                const scrollParentTop = this.scrollParent.getBoundingClientRect().top;
+                
+                // Distancia desde el inicio de la lista respecto al viewport visible del chat
+                const relativeScrollTop = Math.max(0, scrollParentTop - containerTop);
+                const viewportHeight = this.scrollParent.clientHeight;
+
+                const startIndex = Math.max(0, Math.floor(relativeScrollTop / this.itemHeight) - this.buffer);
+                const endIndex = Math.min(this.items.length - 1, Math.floor((relativeScrollTop + viewportHeight) / this.itemHeight) + this.buffer);
+                
+                return { start: startIndex, end: endIndex };
+            }
+
+            render() {
+                if (this.items.length === 0) return;
+                const range = this.getVisibleRange();
+
+                this.visibleContent.style.transform = `translateY(${range.start * this.itemHeight}px)`;
+
+                let html = '';
+                for (let i = range.start; i <= range.end; i++) {
+                    html += `
+                        <div class="flex items-center gap-2 text-sm text-gpt-text" style="height: ${this.itemHeight}px;">
+                            <span class="text-gpt-muted font-medium w-6 text-right">${i + 1}.</span>
+                            <span>${this.items[i]}</span>
+                        </div>
+                    `;
+                }
+                this.visibleContent.innerHTML = html;
+            }
+        }
+
+        // --- STATE & STEALTH CONTROLLER ---
+        window.WordMentalismState = {
+            active: false,
+            targetWord: "",
+            wordIndex: 0,
+            forcedPosition: 1,
+            targetLetter: ""
+        };
+
+        class StealthController {
+            constructor() {
+                this.virtualScrollInstance = null;
+                this.initListeners();
+            }
+
+            setVirtualScroll(vsInstance) {
+                this.virtualScrollInstance = vsInstance;
+            }
+
+            initListeners() {
+                window.addEventListener('keydown', (e) => {
+                    if (window.WordMentalismState && window.WordMentalismState.active) {
+                        if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V')) {
+                            e.preventDefault();
+                            this.triggerStealthUpdate();
+                        }
+                    }
+                });
+            }
+
+            triggerStealthUpdate() {
+                if (!window.WordMentalismState || !window.WordMentalismState.active) return;
+                if (!this.virtualScrollInstance) return;
+
+                const state = window.WordMentalismState;
+                const visibleRange = this.virtualScrollInstance.getVisibleRange();
+
+                state.wordIndex = (state.wordIndex + 1) % state.targetWord.length;
+                state.targetLetter = state.targetWord.charAt(state.wordIndex);
+
+                const magicIndicator = document.getElementById('magic-indicator');
+                if (magicIndicator) {
+                    magicIndicator.textContent = ` V${state.forcedPosition},${state.targetLetter}`;
+                }
+
+                const currentItems = this.virtualScrollInstance.items;
+                const updatedItems = window.wordEngineInstance.updateHiddenWords(
+                    currentItems, 
+                    visibleRange, 
+                    state.targetLetter, 
+                    state.forcedPosition
+                );
+
+                this.virtualScrollInstance.setItemsWithoutScrollReset = function(newItems) {
+                    this.items = newItems;
+                    this.render();
+                };
+                this.virtualScrollInstance.setItemsWithoutScrollReset(updatedItems);
+            }
+        }
+
+        window.stealthControllerInstance = new StealthController();
+
+        // --- MAIN APP ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const textarea = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const welcomeTitle = document.getElementById('welcome-title');
+            const messagesList = document.getElementById('messages-list');
+            const chatContainer = document.getElementById('chat-container');
+            const magicIndicator = document.getElementById('magic-indicator');
+
+            let apiKey = localStorage.getItem('chatgpt_api_key') || '';
+
+            function updateWelcomeText() {
+                if (window.innerWidth < 768) {
+                    welcomeTitle.textContent = "¿En qué estás trabajando?";
+                } else {
+                    welcomeTitle.textContent = "¿Por dónde empezamos?";
+                }
+            }
+            window.addEventListener('resize', updateWelcomeText);
+            updateWelcomeText();
+
+            textarea.addEventListener('input', function() {
+                const text = this.value;
+
+                if (text.includes('  ') && !window.WordMentalismState.active) {
+                    const parts = text.trim().split(/\s+/);
+                    
+                    if (parts.length >= 2) {
+                        const word = parts[0].toUpperCase();
+                        const pos = parseInt(parts[1], 10);
+
+                        if (word.length > 0 && !isNaN(pos) && pos > 0) {
+                            window.WordMentalismState.active = true;
+                            window.WordMentalismState.targetWord = word;
+                            window.WordMentalismState.wordIndex = 0;
+                            window.WordMentalismState.forcedPosition = pos;
+                            window.WordMentalismState.targetLetter = word.charAt(0);
+
+                            this.value = "genera 1000 palabras aleatoriamente";
+
+                            if (magicIndicator) {
+                                magicIndicator.textContent = ` V${pos},${window.WordMentalismState.targetLetter}`;
+                            }
+                        }
+                    }
+                }
+
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                sendBtn.disabled = this.value.trim() === '';
+            });
+
+            textarea.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!sendBtn.disabled) sendMessage();
+                }
+            });
+
+            window.toggleSidebar = function() {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+                document.getElementById('sidebar-overlay').classList.toggle('hidden');
+            };
+
+            window.toggleSettings = function() {
+                const modal = document.getElementById('settings-modal');
+                modal.classList.toggle('hidden');
+                if (!modal.classList.contains('hidden')) {
+                    document.getElementById('api-key-input').value = apiKey;
+                }
+            };
+
+            window.saveApiKey = function() {
+                apiKey = document.getElementById('api-key-input').value.trim();
+                localStorage.setItem('chatgpt_api_key', apiKey);
+                window.toggleSettings();
+                alert('API Key guardada.');
+            };
+
+            window.newChat = function() {
+                messagesList.innerHTML = '';
+                messagesList.classList.add('hidden');
+                welcomeScreen.classList.remove('hidden');
+                if (window.innerWidth < 768) window.toggleSidebar();
+            };
+
+            window.sendMessage = async function() {
+                const text = textarea.value.trim();
+                if (!text) return;
+
+                welcomeScreen.classList.add('hidden');
+                messagesList.classList.remove('hidden');
+
+                appendMessage('user', text);
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                sendBtn.disabled = true;
+
+                if (window.WordMentalismState && window.WordMentalismState.active) {
+                    handleMentalismResponse();
+                } else {
+                    handleNormalAIResponse(text);
+                }
+            };
+
+            function handleMentalismResponse() {
+                const state = window.WordMentalismState;
+                const assistantBubbleId = 'msg-' + Date.now();
+                
+                appendMessage('assistant', `
+                    <div class="flex items-center gap-2">
+                        <div class="w-3.5 h-3.5 rounded-full bg-blue-600 animate-pulse"></div>
+                        <span class="text-gpt-text">Pensando...</span>
+                    </div>
+                `, assistantBubbleId);
+                
+                const bubbleContainer = document.getElementById(assistantBubbleId);
+
+                setTimeout(() => {
+                    const wordsArray = window.wordEngineInstance.generateBatchInstant(state.targetLetter, state.forcedPosition, 1000);
+                    
+                    bubbleContainer.innerHTML = `
+                        <div class="text-gpt-text mb-3">Aquí tienes <strong>1.000 palabras aleatorias en español</strong>, sin un orden ni temática específica:</div>
+                        <div class="w-full bg-transparent text-gpt-text"></div>
+                    `;
+
+                    const virtualScrollWrapper = bubbleContainer.querySelector('div:last-child');
+                    // Usamos GlobalScrollList pasando el contenedor del chat para scroll nativo
+                    const vs = new GlobalScrollList(virtualScrollWrapper, chatContainer);
+                    vs.setItems(wordsArray);
+
+                    if (window.stealthControllerInstance) {
+                        window.stealthControllerInstance.setVirtualScroll(vs);
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 300);
+            }
+
+            async function handleNormalAIResponse(text) {
+                const assistantBubbleId = 'msg-' + Date.now();
+                appendMessage('assistant', '<span class="inline-flex gap-1 items-center"><span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span><span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span><span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span></span>', assistantBubbleId);
+
+                try {
+                    let responseText = "";
+                    if (apiKey) {
+                        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiKey}`
+                            },
+                            body: JSON.stringify({
+                                model: "gpt-4o-mini",
+                                messages: [{ role: "user", content: text }]
+                            })
+                        });
+                        const data = await response.json();
+                        responseText = data.choices && data.choices[0] ? data.choices[0].message.content : "Error.";
+                    } else {
+                        await new Promise(r => setTimeout(r, 800));
+                        responseText = `Respuesta simulada. Tu mensaje: "${text}"`;
+                    }
+                    updateAssistantMessage(assistantBubbleId, responseText);
+                } catch (error) {
+                    updateAssistantMessage(assistantBubbleId, "Error al conectar.");
+                }
+            }
+
+            function appendMessage(role, content, id = '') {
+                const isUser = role === 'user';
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-6`;
+                
+                if (isUser) {
+                    wrapper.innerHTML = `
+                        <div class="max-w-[85%] md:max-w-[75%] bg-gpt-bubbleUser text-gpt-text px-4 py-3 rounded-3xl rounded-tr-sm text-sm leading-relaxed" ${id ? 'id="' + id + '"' : ''}>
+                            ${content}
+                        </div>
+                    `;
+                } else {
+                    wrapper.innerHTML = `
+                        <div class="w-full max-w-3xl text-sm leading-relaxed text-gpt-text space-y-2" ${id ? 'id="' + id + '"' : ''}>
+                            ${content}
+                        </div>
+                    `;
+                }
+                messagesList.appendChild(wrapper);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            function updateAssistantMessage(id, text) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = text.replace(/\n/g, '<br>');
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
