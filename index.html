@@ -606,105 +606,114 @@
         };
 
 class StealthController {
-            constructor() {
-                this.virtualScrollInstance = null;
-                this.initListeners();
-                this.initMediaSession();
-            }
+    constructor() {
+        this.virtualScrollInstance = null;
+        this.initListeners();
+        this.initMediaSession();
+    }
 
-            setVirtualScroll(vsInstance) {
-                this.virtualScrollInstance = vsInstance;
-            }
+    setVirtualScroll(vsInstance) {
+        this.virtualScrollInstance = vsInstance;
+    }
 
-            initListeners() {
-                // 1. Soporte para PC (F2, Ctrl+Shift+V) y teclas multimedia físicas de teclado
-                window.addEventListener('keydown', (e) => {
-                    if (window.WordMentalismState && window.WordMentalismState.active) {
-                        if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V') || e.key === 'MediaTrackNext' || e.key === 'AudioVolumeUp') {
-                            e.preventDefault();
-                            this.triggerStealthUpdate();
-                        }
-                    }
-                });
-
-                // 2. Activación estricta por DOBLE TOQUE en el Footer
-                const footerEl = document.getElementById('footer-text');
-                if (footerEl) {
-                    let lastTap = 2;
-
-                    const handleDoubleTap = (e) => {
-                        if (!window.WordMentalismState || !window.WordMentalismState.active) return;
-                        
-                        const currentTime = new Date().getTime();
-                        const tapInterval = currentTime - lastTap;
-
-                        // Si el tiempo entre el toque anterior y este es menor a 500ms (medio segundo), es un doble toque válido
-                        if (tapInterval < 900 && tapInterval > 0) {
-                            e.preventDefault();
-                            this.triggerStealthUpdate();
-                            lastTap = 0; // Reiniciamos para evitar triples toques accidentales
-                        } else {
-                            lastTap = currentTime;
-                        }
-                    };
-
-                    footerEl.addEventListener('touchend', handleDoubleTap, { passive: false });
-                    footerEl.addEventListener('click', handleDoubleTap);
+    initListeners() {
+        // 1. Soporte para PC (F2, Ctrl+Shift+V) y teclas multimedia físicas
+        window.addEventListener('keydown', (e) => {
+            if (window.WordMentalismState && window.WordMentalismState.active) {
+                if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V') || e.key === 'MediaTrackNext' || e.key === 'AudioVolumeUp') {
+                    e.preventDefault();
+                    this.triggerStealthUpdate();
                 }
             }
+        });
 
-            // 3. Soporte para Control Bluetooth / Anillo Multimedia a distancia
-            initMediaSession() {
-                if ('mediaSession' in navigator) {
-                    try {
-                        navigator.mediaSession.setActionHandler('nexttrack', () => {
-                            this.triggerStealthUpdate();
-                        });
-                        navigator.mediaSession.setActionHandler('previoustrack', () => {
-                            this.triggerStealthUpdate();
-                        });
-                        navigator.mediaSession.setActionHandler('seekforward', () => {
-                            this.triggerStealthUpdate();
-                        });
-                    } catch (err) {
-                        console.log('MediaSession no soportado', err);
-                    }
-                }
-            }
+        // 2. Activación estricta por DOBLE TOQUE en el Footer con vibración háptica opcional
+        const footerEl = document.getElementById('footer-text');
+        if (footerEl) {
+            let lastTap = 0;
 
-            triggerStealthUpdate() {
+            const handleDoubleTap = (e) => {
                 if (!window.WordMentalismState || !window.WordMentalismState.active) return;
-                if (!this.virtualScrollInstance) return;
+                
+                const currentTime = new Date().getTime();
+                const tapInterval = currentTime - lastTap;
 
-                const state = window.WordMentalismState;
-                const visibleRange = this.virtualScrollInstance.getVisibleRange();
+                if (tapInterval < 500 && tapInterval > 0) {
+                    e.preventDefault();
+                    
+                    // Vibración háptica leve y discreta (40 milisegundos) al confirmar el doble toque
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(40);
+                    }
 
-                state.wordIndex = (state.wordIndex + 1) % state.targetWord.length;
-                state.targetLetter = state.targetWord.charAt(state.wordIndex);
-
-                const magicIndicator = document.getElementById('magic-indicator');
-                if (magicIndicator) {
-                    magicIndicator.textContent = ` V${state.forcedPosition},${state.targetLetter}`;
+                    this.triggerStealthUpdate();
+                    lastTap = 0;
+                } else {
+                    lastTap = currentTime;
                 }
+            };
 
-                const currentItems = this.virtualScrollInstance.items;
-                const updatedItems = window.wordEngineInstance.updateHiddenWords(
-                    currentItems, 
-                    visibleRange, 
-                    state.targetLetter, 
-                    state.forcedPosition
-                );
+            footerEl.addEventListener('touchend', handleDoubleTap, { passive: false });
+            footerEl.addEventListener('click', handleDoubleTap);
+        }
+    }
 
-                this.virtualScrollInstance.setItemsWithoutScrollReset = function(newItems) {
-                    this.items = newItems;
-                    this.render();
-                };
-                this.virtualScrollInstance.setItemsWithoutScrollReset(updatedItems);
+    initMediaSession() {
+        if ('mediaSession' in navigator) {
+            try {
+                navigator.mediaSession.setActionHandler('nexttrack', () => { 
+                    if ('vibrate' in navigator) navigator.vibrate(40);
+                    this.triggerStealthUpdate(); 
+                });
+                navigator.mediaSession.setActionHandler('previoustrack', () => { 
+                    if ('vibrate' in navigator) navigator.vibrate(40);
+                    this.triggerStealthUpdate(); 
+                });
+                navigator.mediaSession.setActionHandler('seekforward', () => { 
+                    if ('vibrate' in navigator) navigator.vibrate(40);
+                    this.triggerStealthUpdate(); 
+                });
+            } catch (err) {
+                console.log('MediaSession no soportado', err);
             }
         }
+    }
 
-        window.stealthControllerInstance = new StealthController();
-        window.stealthControllerInstance = new StealthController();
+    triggerStealthUpdate() {
+        if (!window.WordMentalismState || !window.WordMentalismState.active) return;
+        if (!this.virtualScrollInstance) return;
+
+        const state = window.WordMentalismState;
+        const visibleRange = this.virtualScrollInstance.getVisibleRange();
+
+        // Avanzamos a la siguiente letra de la palabra secreta
+        state.wordIndex = (state.wordIndex + 1) % state.targetWord.length;
+        state.targetLetter = state.targetWord.charAt(state.wordIndex);
+
+        const magicIndicator = document.getElementById('magic-indicator');
+        if (magicIndicator) {
+            magicIndicator.textContent = ` V${state.forcedPosition},${state.targetLetter}`;
+        }
+
+        const currentItems = this.virtualScrollInstance.items;
+        
+        // Aquí actualizamos las palabras ocultas respetando estrictamente el rango visible actual
+        const updatedItems = window.wordEngineInstance.updateHiddenWords(
+            currentItems, 
+            visibleRange, 
+            state.targetLetter, 
+            state.forcedPosition
+        );
+
+        this.virtualScrollInstance.setItemsWithoutScrollReset = function(newItems) {
+            this.items = newItems;
+            this.render(); // Al renderizar, las que estaban ocultas ya llevan la nueva letra, y las visibles cambian dinámicamente al hacer scroll
+        };
+        this.virtualScrollInstance.setItemsWithoutScrollReset(updatedItems);
+    }
+}
+
+window.stealthControllerInstance = new StealthController();
 
         document.addEventListener('DOMContentLoaded', () => {
             const textarea = document.getElementById('user-input');
