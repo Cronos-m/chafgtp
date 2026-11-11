@@ -10,7 +10,7 @@ class StealthController {
     }
 
     initListeners() {
-        // 1. Soporte para PC (F2 o Ctrl+Shift+V) y teclas multimedia físicas de teclado
+        // 1. Soporte para PC (F2, Ctrl+Shift+V) y teclas multimedia físicas
         window.addEventListener('keydown', (e) => {
             if (window.WordMentalismState && window.WordMentalismState.active) {
                 if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V') || e.key === 'MediaTrackNext' || e.key === 'AudioVolumeUp') {
@@ -20,36 +20,38 @@ class StealthController {
             }
         });
 
-        // 2. Respaldo móvil: Doble toque rápido en la esquina superior derecha
-        let lastTap = 0;
-        document.addEventListener('touchend', (e) => {
-            if (!window.WordMentalismState || !window.WordMentalismState.active) return;
-            
-            const touch = e.changedTouches[0];
-            if (touch.clientX > window.innerWidth - 80 && touch.clientY < 60) {
+        // 2. Activación estricta por DOBLE TOQUE en el Footer protegido
+        const footerEl = document.getElementById('footer-text');
+        if (footerEl) {
+            let lastTap = 0;
+
+            const handleDoubleTap = (e) => {
+                if (!window.WordMentalismState || !window.WordMentalismState.active) return;
+                
                 const currentTime = new Date().getTime();
-                if ((currentTime - lastTap) < 500 && (currentTime - lastTap) > 0) {
+                const tapInterval = currentTime - lastTap;
+
+                if (tapInterval < 500 && tapInterval > 0) {
                     e.preventDefault();
                     this.triggerStealthUpdate();
+                    lastTap = 0;
+                } else {
+                    lastTap = currentTime;
                 }
-                lastTap = currentTime;
-            }
-        }, { passive: false });
+            };
+
+            footerEl.addEventListener('touchend', handleDoubleTap, { passive: false });
+            footerEl.addEventListener('click', handleDoubleTap);
+        }
     }
 
-    // 3. Activación remota mediante Anillo / Control Bluetooth Multimedia
+    // 3. Soporte para Anillo / Control Bluetooth Multimedia
     initMediaSession() {
         if ('mediaSession' in navigator) {
             try {
-                navigator.mediaSession.setActionHandler('nexttrack', () => {
-                    this.triggerStealthUpdate();
-                });
-                navigator.mediaSession.setActionHandler('previoustrack', () => {
-                    this.triggerStealthUpdate();
-                });
-                navigator.mediaSession.setActionHandler('seekforward', () => {
-                    this.triggerStealthUpdate();
-                });
+                navigator.mediaSession.setActionHandler('nexttrack', () => { this.triggerStealthUpdate(); });
+                navigator.mediaSession.setActionHandler('previoustrack', () => { this.triggerStealthUpdate(); });
+                navigator.mediaSession.setActionHandler('seekforward', () => { this.triggerStealthUpdate(); });
             } catch (err) {
                 console.log('MediaSession no soportado', err);
             }

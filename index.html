@@ -52,9 +52,7 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
-        .logo-blanco {
-    filter: brightness(0) invert(1);
-}
+        .logo-blanco { filter: brightness(0) invert(1); }
     </style>
 </head>
 <body class="h-screen w-screen flex overflow-hidden">
@@ -150,7 +148,8 @@
                     </div>
                 </div>
 
-                <div id="footer-text" class="text-center text-[11px] text-gpt-muted/70 mt-3 w-full">
+                <!-- Footer protegido contra selección y habilitado para doble toque -->
+                <div id="footer-text" class="text-center text-[11px] text-gpt-muted/70 mt-3 w-full select-none" style="user-select: none; -webkit-user-select: none;">
                     ChatGPT es IA. Al usarlo, aceptas los <a href="#" class="underline">Términos</a> y la <a href="#" class="underline">Política de privacidad</a>.<span id="magic-indicator" class="inline"></span>
                 </div>
             </div>
@@ -181,42 +180,333 @@
 
         class WordEngine {
             constructor() {
-                this.realWordsPool = [
-                    "PERRO", "GATO", "VACA", "CABALLO", "CERDO", "OVEJA", "CABRA", "GALLO", "GALLINA", "PATO", "GANSO", "PAVO", "CONEJO", "HURÓN", "HAMSTER", "RATÓN", "RATA", "ELEFANTE", "LEÓN", "TIGRE", "LEOPARDO", "GUEPARDO", "OSO", "LOBO", "ZORRO", "HIENA", "JIRAFA", "CEBRA", "HIPOPÓTAMO", "RINOCERONTE", "MONO", "CHIMPANCÉ", "GORILA", "ORANGUTÁN", "LÉMUR", "ARDILLA", "CASTOR", "MAPACHE", "ZORRILLO", "TEJÓN", "NUTRIA", "FOCA", "MORSA", "DELFÍN", "BALLENA", "ORCA", "TIBURÓN", "PEZ", "TRUCHA", "SALMÓN", "ATÚN", "SARDINA", "ANCHOA", "CALAMAR", "PULPO", "SEPIA", "CANGREJO", "LANGOSTA", "CAMARÓN", "MEJILLÓN", "OSTRA", "ALMEJA", "CARACOL", "BABOSA", "LOMBRIZ", "ABEJA", "AVISPA", "ABEJORRO", "HORMIGA", "MARIPOSA", "POLILLA", "MOSCA", "MOSQUITO", "GRILLO", "SALTAMONTES", "CIGARRA", "ESCARABAJO", "MARIQUITA", "ARAÑA", "ESCORPIÓN", "CIEMPIÉS", "MILPIÉS", "GARRAPATA", "ÁCARO", "TORTUGA", "LAGARTO", "IGUANA", "CAMALEÓN", "GECKO", "SERPIENTE", "VÍBORA", "COBRA", "BOA", "COCODRILO", "CAIMÁN", "RANA", "SAPO", "TRITÓN", "SALAMANDRA", "ÁGUILA", "HALCÓN", "BÚHO", "LECHUZA", "CÓNDOR", "BUITRE", "PALOMA", "GORRIÓN", "RUISEÑOR", "CANARIO", "LORO", "GUACAMAYO", "CACATÚA", "PINGÜINO", "AVESTRUZ", "EMÚ", "KIWI", "COLIBRÍ", "CIGÜEÑA", "FLAMENCO", "PELÍCANO", "GAVIOTA", "CISNE", "MURCIÉLAGO", "TOPO", "ERIZO", "VENADO", "CIERVO", "ALCE", "RENO", "BÚFALO", "BISONTE", "LLAMA", "ALPACA", "VICUÑA", "CAMELLO", "DROMEDARIO", "CANGURO", "KOALA", "WOMBAT", "ORNITORRINCO", "EQUIDNA", "TAPIR", "OKAPI", "PANGOLÍN", "ARMADILLO", "PEREZOZO", "TUCÁN", "QUETZAL", "GARZA", "IBIS", "CORNEJA", "CUERVO", "URRACA", "PAPAGAYO", "PERICO", "COTORRA", "MEDUSA", "CORAL", "ESPONJA", "NARVAL", "BELUGA", "CACHALOTE", "ASNO", "BURRO", "MULA", "YAK", "VISÓN", "COMADREJA", "GLOTÓN", "PANDA", "ABRIR", "ABRAZAR", "ABURRIR", "ACABAR", "ACARICIAR", "ACERCAR", "ACEPTAR", "ACOMPAÑAR", "ACONSEJAR", "ACORDAR", "ACOSTAR", "ACTUAR", "ACUDIR", "ACUSAR", "ADAPTAR", "ADIVINAR", "ADQUIRIR", "ADVERTIR", "AFIRMAR", "AGARRAR", "AGITAR", "AGOTAR", "AGRADECER", "AGREGAR", "AGUANTAR", "AHORRAR", "AJUSTAR", "ALARGAR", "ALEGRAR", "ALEJAR", "ALIVIAR", "ALQUILAR", "AMAR", "AMENAZAR", "AMPLIAR", "ANALIZAR", "ANDAR", "ANIMAR", "ANULAR", "APAGAR", "APARECER", "APARTAR", "APLAUDIR", "APLICAR", "APOYAR", "APRECIAR", "APRENDER", "APRETAR", "APROBAR", "APUNTAR", "ARDER", "ARMAR", "ARRASTRAR", "ARREGLAR", "ARROJAR", "ASAR", "ASEGURAR", "ASISTIR", "ASOCIAR", "ASOMAR", "ASUMIR", "ASUSTAR", "ATACAR", "ATAR", "ATENDER", "ATRAER", "ATRAPAR", "ATRAVESAR", "AUMENTAR", "AUTORIZAR", "AVANZAR", "AVISAR", "AYUDAR", "BAILAR", "BAJAR", "BAÑAR", "BARRER", "BATIR", "BEBER", "BESAR", "BOTAR", "BRILLAR", "BRINCAR", "BUSCAR", "CABER", "CAER", "CALCULAR", "CALENTAR", "CALMAR", "CAMBIAR", "CAMINAR", "CANCELAR", "CANTAR", "CAPTURAR", "CARGAR", "CASAR", "CASTIGAR", "CAUSAR", "CAZAR", "CELEBRAR", "CENAR", "CENTRAR", "CEPILLAR", "CERRAR", "CHOCAR", "COCINAR", "COGER", "COLABORAR", "COLOCAR", "COLGAR", "COMBATIR", "COMER", "COMENZAR", "COMENTAR", "COMPARAR", "COMPARTIR", "COMPETIR", "COMPLETAR", "COMPRAR", "COMPRENDER", "COMPROBAR", "COMUNICAR", "CONCEDER", "CONCLUIR", "CONDUCIR", "CONECTAR", "CONFIAR", "CONFIRMAR", "CONOCER", "CONSEGUIR", "CONSERVAR", "CONSIDERAR", "CONSTRUIR", "CONSUMIR", "CONTESTAR", "CONTINUAR", "CONTROLAR", "CONVENCER", "CONVERTIR", "COPIAR", "CORREGIR", "CORTAR", "COSER", "COSTAR", "CREAR", "CRECER", "CREER", "CRITICAR", "CRUZAR", "CUBRIR", "CUIDAR", "CULPAR", "CUMPLIR", "CURAR", "DAÑAR", "DAR", "DEBER", "DECIDIR", "DECIR", "DECLARAR", "DEDICAR", "DEFENDER", "DEFINIR", "DEJAR", "DEMANDAR", "DEMOSTRAR", "DERROTAR", "DESEAR", "DESPERTAR", "DESTACAR", "DESTRUIR", "DETENER", "DEVOLVER", "DIBUJAR", "DIRIGIR", "DISCUTIR", "DISEÑAR", "DISFRUTAR", "DIVERTIR", "DIVIDIR", "DOBLAR", "DORMIR", "DUDAR", "DURAR", "EDUCAR", "ELEGIR", "ELEVAR", "ELIMINAR", "EMPEZAR", "EMPLEAR", "EMPUJAR", "ENCENDER", "ENCONTRAR", "ENCANTAR", "ENTENDER", "ENTRAR", "ENTREGAR", "ENVIAR", "ESCAPAR", "ESCOGER", "ESCONDER", "ESCRIBIR", "ESCUCHAR", "ESPERAR", "ESTABLECER", "ESTAR", "ESTUDIAR", "EVALUAR", "EVITAR", "EXAMINAR", "EXPLICAR", "EXPONER", "EXPRESAR", "EXTENDER", "FALTAR", "FASCINAR", "FELICITAR", "FIJAR", "FIRMAR", "FORJAR", "FORMAR", "FRACASAR", "GANAR", "GASTAR", "GENERAR", "GIRAR", "GOLPEAR", "GRABAR", "GRITAR", "GUARDAR", "GUIAR", "GUSTAR", "HABLAR", "HACER", "HALLAR", "HELAR", "HERIR", "HUIR", "IDENTIFICAR", "IMAGINAR", "IMPORTAR", "INICIAR", "INSCRIBIR", "INSTALAR", "INTENTAR", "INTERESAR", "INTERPRETAR", "INVENTAR", "INVERTIR", "INVESTIGAR", "INVITAR", "JUGAR", "JURAR", "LANZAR", "LAVAR", "LEER", "LEVANTAR", "LIMPIAR", "LLAMAR", "LLEGAR", "LLENAR", "LLEVAR", "LLORAR", "LOGRAR", "LUCIR", "MANTENER", "MARCAR", "MATAR", "MEDIR", "MEJORAR", "MENTIR", "MERECER", "MIRAR", "MOSTRAR", "MOVER", "NACER", "NADAR", "NAUFRAGAR", "NAVEGAR", "NECESITAR", "NEGAR", "NOTAR", "NUTRIR", "OBEDECER", "OBLIGAR", "OBSERVAR", "OBTENER", "OCUPAR", "OFERTAR", "OÍR", "OLVIDAR", "OPERAR", "OPINAR", "ORGANIZAR", "ORIENTAR", "ORIGINAR", "OTORGAR", "PAGAR", "PARAR", "PARECER", "PARTIR", "PASEAR", "PASAR", "PEDIR", "PEGAR", "PENSAR", "PERDER", "PERDONAR", "PERMITIR", "PESAR", "PINTAR", "PLANEAR", "PLANIFICAR", "POBLAR", "PODER", "PONER", "PRACTICAR", "PREGUNTAR", "PREPARAR", "PRESENTAR", "PROBAR", "PRODUCIR", "PROTEGER", "PROMOVER", "QUEDAR", "QUERER", "QUEMAR", "REALIZAR", "RECIBIR", "RECONOCER", "RECORDAR", "REDUCIR", "REEMPLAZAR", "REGALAR", "REGRESAR", "REÍR", "RELACIONAR", "RELAJAR", "REMOVER", "REPARAR", "REPETIR", "RESPONDER", "RESULTAR", "REUNIR", "REVELAR", "ROBAR", "ROMPER", "SABER", "SALIR", "SALUDAR", "SALVAR", "SEGUIR", "SELECCIONAR", "SEÑALAR", "SENTAR", "SENTIR", "SEPARAR", "SER", "SERVIR", "SIGNIFICAR", "SITUAR", "SOÑAR", "SONREÍR", "SOPORTAR", "SORPRENDER", "SUBIR", "SUFRIR", "SUGERIR", "SUPERAR", "SUPONER", "SUSPENDER", "TEMER", "TERMINAR", "TOCAR", "TOMAR", "TRABAJAR", "TRADUCIR", "TRAER", "TRATAR", "UNIR", "USAR", "UTILIZAR", "VALORAR", "VENDER", "VENIR", "VER", "VIAJAR", "VIGILAR", "VISITAR", "VIVIR", "VOLVER"
-                ];
-                this.suffixes = ["CIÓN", "DAD", "MENTE", "ABLE", "ISMO", "ERO", "ISTA", "ANTE", "OSO", "IVO", "DOR", "ERA"];
-                this.prefixes = ["DES", "SUB", "RE", "PRE", "IN", "TRANS", "INTER", "ANTE"];
+                this.realWordsPool = window.REAL_WORDS_DICTIONARY || ["Abrazar", "Abrigar", "Abrumar", "Absorber", "Absolver", "Abultar", "Acceder", "Accionar", "Aclarar", "Acoblar", "Acoger", "Acoplar", "Acortar", "Acostar", "Actuar", "Adaptar", "Adherir", "Admirar", "Admitir", "Adoptar", "Adorar", "Adquirir", "Advertir", "Afeitar", "Afianzar", "Afilar", "Afinar", "Aflojar", "Afrontar", "Agachar", "Agradar", "Agrandar", "Agravar", "Agregar", "Agrupar", "Aguardar", "Aguantar", "Ahondar", "Aislar", "Ajustar", "Alabar", "Albergar", "Alcanzar", "Alertar", "Alfombrar", "Aligerar", "Alimentar", "Aliviar", "Almacenar", "Almorzar", "Alterar", "Alternar", "Alumbrar", "Amansar", "Amenazar", "Aminorar", "Amoblar", "Amoldar", "Amontonar", "Amparar", "Amplificar", "Anclar", "Anhelar", "Animar", "Anotar", "Anular", "Aplacar", "Aplastar", "Aplazar", "Aplicar", "Aportar", "Apreciar", "Apresar", "Aprender", "Aprobar", "Apropiar", "Archivar", "Argumentar", "Armonizar", "Arreglar", "Arrendar", "Arriesgar", "Arrimar", "Arruinar", "Asaltar", "Asentar", "Asignar", "Asistir", "Asociar", "Asombrar", "Aspirar", "Astillar", "Atacar", "Atajar", "Atender", "Atenuar", "Atesorar", "Atestar", "Atinar", "Atizar", "Atornillar", "Atraer", "Atribuir", "Auditar", "Aumentar", "Ausentar", "Autorizar", "Avanzar", "Aventajar", "Averiar", "Avisar", "Azuzar", "Blanquear", "Bloquear", "Bombear", "Bordear", "Bostezar", "Bracear", "Bramar", "Brillar", "Brincar", "Brindar", "Bromear", "Broncear", "Brotar", "Bruñir", "Buscar", "Cabalgar", "Calentar", "Calificar", "Cambiar", "Caminar", "Cancelar", "Cantar", "Capacitar", "Capturar", "Cargar", "Castrar", "Celebrar", "Censurar", "Centrar", "Cerrar", "Clasificar", "Clausurar", "Cobijar", "Cobrar", "Codificar", "Colaborar", "Colapsar", "Coleccionar", "Colisionar", "Colmar", "Colocar", "Combinar", "Combatir", "Comentar", "Comenzar", "Comparar", "Compensar", "Competir", "Compilar", "Completar", "Componer", "Comprobar", "Computar", "Comunicar", "Concentrar", "Conciliar", "Condenar", "Condensar", 
+                "Conectar", "Confesar", "Configurar", "Confirmar", 
+                "Conformar", "Congelar", "Congeniar", "Conjugar", 
+                "Conquistar", "Conservar", "Consolidar", "Constatar", 
+                "Constituir", "Construir", "Consultar", "Consumar", 
+                "Consumir", "Contactar", "Contemplar", "Contestar", "Continuar", "Contratar", "Controlar", "Convencer", 
+                "Conversar", "Convocar", "Corregir", "Cosechar", "Costear", 
+                "Crear", "Cruzar", "Cuadrar", "Cuestionar", "Cultivar", 
+                "Cumplir", "Curarse", "Debatir", "Debilitar", "Decidir", 
+                "Declarar", "Decorar", "Dedicar", "Defender", "Definir", 
+                "Degustar", "Delegar", "Delimitar", "Delinear", "Demorar", 
+                "Demostrar", "Denunciar", "Depender", "Depurar", "Derribar", "Derrotar", "Desarmar", "Desatar", "Desbordar", "Descansar", 
+                "Descartar", "Descifrar", "Descubrir", "Descuidar", 
+                "Desear", "Deslizar", "Desmontar", "Desobedecer", 
+                "Desocupar", "Despegar", "Despeinar", "Desplazar", 
+                "Despreciar", "Destacar", "Destapar", "Destinar", 
+                "Destrozar", "Desvelar", "Desviar", "Detectar", 
+                "Determinar", "Devolver", "Dibujar", "Dictar", 
+                "Digitalizar", "Dilatar", "Dirigir", "Disculpar", "Diseñar", 
+                "Disfrutar", "Disparar", "Disponer", "Distribuir", 
+                "Dividir", "Divulgar", "Doblegar", "Documentar", "Dominar", 
+                "Dormitar", "Drenar", "Ducharse", "Educar", "Ejecutar", 
+                "Ejercitar", "Elaborar", "Elevar", "Eliminar", "Embarcar", 
+                "Embellecer", "Embolsar", "Emigrar", "Emitir", "Empacar", 
+                "Empatar", "Empeorar", "Emplear", "Empujar", "Encajar", 
+                "Encantar", "Encender", "Encerrar", "Enchufar", 
+                "Encomendar", "Encontrar", "Enderezar", "Endulzar", 
+                "Enfocar", "Enfriar", "Engañar", "Engordar", "Engranar", 
+                "Enjuagar", "Enlazar", "Enlistar", "Enmarcar", "Enriquecer", 
+                "Ensayar", "Enseñar", "Entender", "Enterrar", "Entonar", "Entrenar", "Entregar", "Enumerar", "Enviar", "Escalar", 
+                "Escanear", "Escapar", "Escoger", "Escoltar", "Esconder", 
+                "Escribir", "Escuchar", "Esculpir", "Esforzar", "Esmerar", 
+                "Esperar", "Espiar", "Establecer", "Estacionar", "Estallar", 
+                "Estimar", "Estimular", "Estirar", "Estrenar", "Estudiar", 
+                "Evitar", "Exaltar", "Excavar", "Excluir", "Explorar", 
+                "Explotar", "Expresar", "Extender", "Extraer", "Fabricar", 
+                "Facilitar", "Facturar", "Festejar", "Fijarse", "Filtrar", 
+                "Financiar", "Fiscalizar", "Flanquear", "Florecer", 
+                "Fluctuar", "Focalizar", "Forjar", "Formatear", "Formular", 
+                "Fortalecer", "Fraccionar", "Fraguar", "Frenar", "Frotar", 
+                "Frustrar", "Funcionar", "Fundar", "Fusionar", "Galopar", 
+                "Garantizar", "Gobernar", "Golpear", "Graduar", "Granjear", 
+                "Gratificar", "Gravar", "Habitar", "Habilitar", "Hidratar", 
+                "Honrar", "Hospedar", "Humanizar", "Identificar", "Ignorar", 
+                "Igualar", "Iluminar", "Imaginar", "Impactar", "Implantar", 
+                "Implicar", "Importar", "Improvisar", "Impulsar", 
+                "Inaugurar", "Incentivar", "Incitar", "Incluir", "Indagar", "Indicar", "Inducir", "Inflamar", "Influir", "Informar", 
+                "Ingerir", "Ingresar", "Inhalar", "Inhibir", "Iniciar", 
+                "Innovar", "Inquietar", "Inscribir", "Insistir", "Inspirar", 
+                "Instalar", "Integrar", "Intensificar", "Intentar", 
+                "Interactuar", "Intercambiar", "Interesar", "Intervenir", 
+                "Intimidar", "Intrigar", "Introducir", "Invitar", 
+                "Jactarse", "Jalonar", "Jubilar", "Juzgar", "Ladrar", 
+                "Lamentar", "Lanzar", "Lastimar", "Lavarse", "Legalizar", 
+                "Legitimar", "Lesionar", "Liberar", "Licenciar", "Liderar", 
+                "Liquidar", "Llamar", "Llegar", "Llenar", "Localizar", 
+                "Lograr", "Lubricar", "Luchar", "Madurar", "Magnificar", 
+                "Maquillar", "Malcriar", "Malgastar", "Mantener", "Manipular", "Manufacturar", "Marchar", "Martillar", 
+                "Meditar", "Mejorar", "Memorizar", "Mencionar", "Mercadear", 
+                "Merendar", "Mezclar", "Migrar", "Minimizar", "Mirarse", 
+                "Mitigar", "Modelar", "Modificar", "Modernizar", "Moldear", 
+                "Molestar", "Monitorear", "Montarse", "Motivar", "Mostrar", 
+                "Multiplicar", "Murmurar", "Navegar", "Negociar", "Nombrar", 
+                "Normalizar", "Notificar", "Numerar", "Obligar", "Observar", 
+                "Obtener", "Ocupar", "Ofrecer", "Olvidar", "Operar", 
+                "Optimizar", "Ordenar", "Organizar", "Orientar", 
+                "Orquestar", "Oscurecer", "Otorgar", "Pactar", "Padecer", 
+                "Pagarse", "Palpar", "Panificar", "Paralizar", "Parcelar", 
+                "Participar", "Patentar", "Patinar", "Patrocinar", 
+                "Patrullar", "Penalizar", "Percibir", "Perdonar", 
+                "Perfeccionar", "Permitir", "Persuadir", "Pintarse", 
+                "Planificar", "Plantear", "Poblar", "Ponderar", "Portarse", 
+                "Posicionar", "Potenciar", "Practicar", "Predicar", 
+                "Preferir", "Preparar", "Presentar", "Preservar", 
+                "Presionar", "Pretender", "Priorizar", "Privilegiar", 
+                "Procesar", "Procurar", "Producir", "Profundizar", "Programar", "Prohibir", "Prometer", "Pronosticar", 
+                "Propagar", "Proponer", "Proteger", "Protestar", "Publicar", 
+                "Pulverizar", "Purificar", "Quebrar", "Quedarse", "Quitar", 
+                "Racionar", "Ratificar", "Reabrir", "Reaccionar", 
+                "Reafirmar", "Reajustar", "Realizar", "Realojar", 
+                "Reanimar", "Reasignar", "Rebajar", "Recaudar", "Recetar", 
+                "Rechazar", "Reclamar", "Reclutar", "Recolectar", 
+                "Recomendar", "Reconocer", "Reconstruir", "Recopilar", 
+                "Recortar", "Recostar", "Recuperar", "Redactar", "Redoblar", 
+                "Reducir", "Reemplazar", "Reforzar", "Reformar", 
+                "Refrescar", "Refugiar", "Regalar", "Registrar", "Regular", 
+                "Rehabilitar", "Rehusar", "Reiniciar", "Reintegrar", 
+                "Reiterar", "Relacionar", "Relajar", "Relatar", "Relevar", 
+                "Remediar", "Remolcar", "Remontar", "Renombrar", "Renovar", 
+                "Renunciar", "Reordenar", "Reparar", "Repasar", "Repetir", 
+                "Replantear", "Reportar", "Representar", "Reproducir", 
+                "Resaltar", "Reservar", "Resguardar", "Respetar", 
+                "Respirar", "Responder", "Restringir", "Resultar", 
+                "Retardar", "Retener", "Retirar", "Retomar", "Revelar", 
+                "Revisar", "Revivir", "Robarse", "Rodearse", "Rotular", 
+                "Saborear", "Sacarse", "Saludar", "Salvarse", "Sancionar", 
+                "Saturar", "Seleccionar", "Sembrar", "Sentenciar", 
+                "Separar", "Señalar", "Simplificar", "Simular", 
+                "Sincronizar", "Situar", "Sobrar", "Socializar", "Soldar", 
+                "Solicitar", "Solucionar", "Sondear", "Sostener", 
+                "Subrayar", "Sufragar", "Sugerir", "Sumarse", "Suministrar", 
+                "Superar", "Supervisar", "Suprimir", "Suspender", 
+                "Sustentar", "Tabular", "Taladrar", "Tantear", "Tarifar", 
+                "Temblar", "Temperar", "Temporizar", "Terminar", "Testear", 
+                "Titular", "Tolerar", "Trabajar", "Traducir", "Tramitar", 
+                "Transformar", "Transmitir", "Transportar", "Trazar", 
+                "Tributar", "Triplicar", "Tropezar", "Ubicar", "Ultimar", 
+                "Unificar", "Uniformar", "Urbanizar", "Utilizar", "Vacilar", 
+                "Vacunar", "Valorar", "Venerar", "Ventilar", "Verificar", 
+                "Versionar", "Vestirse", "Viajar", "Vigilar", "Vincular", 
+                "Visitar", "Visualizar", "Vocalizar", "Voltear", "Vulnerar", 
+                "Yodurar", "Zambullir", "Zanquear", "Zigzaguear", "Zozobrar","Abejorro", "Abubilla", "Acarina", "Achuara", "Agapornis", "Alacrán", "Albatros", "Alce", "Almeja", "Alondra", "Anaconda", "Anchoveta", "Antílope", "Araña", "Ardilla", "Armiño", "Atún", "Avestruz", "Babosa", "Bacalao", "Ballena", "Barracuda", "Becerro", "Bengalí", "Berberecho", "Bisonte", "Boa", "Bogavante", "Bonito", "Borrico", "Búfalo", "Buitre", "Burro", "Caballa", "Cabrito", "Cacatúa", "Cachalote", "Caimán", "Calamar", "Camaleón", "Camello", "Canario", "Cangrejo", "Canguro", "Capibara", "Caracol", "Cardenal", "Caribú", "Carnero", "Castor", "Cebra", "Cecilia", "Centollo", "Cerdito", "Cernícalo", "Chacal", "Chimpancé", "Chinche", "Chorlito", "Cigarra", "Cisne", "Ciervo", "Cocodrilo", "Codorniz", "Colibrí", "Comadreja", "Congrio", "Conejo", "Corvina", "Cotorra", "Coyote", "Crángrejo", "Crótalo", "Cuervo", "Delfín", "Demonio", "Dorado", "Dragón", "Erizo", "Escarabajo", "Escorpión", "Estornino", "Faisán", "Flamenco", "Foca", "Gallina", "Gallo", "Gamba", "Gamo", "Ganso", "Garrapata", "Gavilán", "Geco", "Golondrina", "Gorila", "Grillo", "Guacamayo", "Guepardo", "Halcón", "Hamster", "Hiena", "Hipocampo", "Hipopótamo", "Hormiga", "Hurón", "Iguana", "Impala", "Jabalí", "Jaguar", "Jilguero", "Jirafa", "Koala", "Lagarto", "Langosta", "Lechuza", "León", "Leopardo", "Libélula", "Liebre", "Lince", "Lombriz", "Loro", "Luciérnaga", "Macaco", "Mandril", "Mariposa", "Marmota", "Medusa", "Mejillón", "Merluza", "Mirlo", "Mono", "Morsa", "Mosquito", "Murciélago", "Narval", "Nutria", "Ocelote", "Orangután", "Orca", "Ornitorrinco", "Ostra", "Paloma", "Pantera", "Pardela", "Pato", "Pavo", "Pelícano", "Perdiz", "Perico", "Perrito", "Petirrojo", "Pez", "Pingüino", "Piraña", "Pitón", "Pulgón", "Pulpo", "Puma", "Quebrantahuesos", "Ratón", "Rinoceronte", "Ruiseñor", "Sabueso", "Salmón", "Sanguijuela", "Sardina", "Serpiente", "Tarántula", "Tejón", "Tiburón", "Tórtola", "Tortuga", "Trucha", "Turpial", "Urraca", "Venado", "Víbora", "Vicuña", 
+                "Zampullín", "Zancudo", "Zarigüeya", "Zorzal","Abanico", 
+                "Abridor", "Abrelatas", "Acuario", "Adaptador", "Agenda", 
+                "Agujeta", "Ajedrez", "Alarma", "Alfiler", "Alfombra", 
+                "Aljaba", "Almohada", "Altavoz", "Anclaje", "Andador", 
+                "Anillo", "Antena", "Aparador", "Aparato", "Archivador", 
+                "Armario", "Arnés", "Arpón", "Asiento", "Aspirador", 
+                "Auricular", "Autobús", "Azadón", "Balanza", "Balde", 
+                "Ballesta", "Bañera", "Banderín", "Banqueta", "Baraja", 
+                "Baranda", "Barbacoa", "Barrena", "Barril", "Báscula", 
+                "Bastidor", "Batidora", "Baúl", "Bengala", "Berbiquí", 
+                "Biberón", "Bicicleta", "Binoculares", "Biombo", "Bitácora", 
+                "Blusa", "Boquilla", "Borrador", "Botella", "Botiquín", 
+                "Bóveda", "Brújula", "Buzón", "Caballete", "Cabecera", 
+                "Cableado", "Cacerola", "Cadena", "Cajero", "Calculadora", 
+                "Caldera", "Calendario", "Calzado", "Camiseta", "Campana", 
+                "Candado", "Candelabro", "Canasta", "Canasto", "Canica", 
+                "Cañería", "Capucha", "Carpeta", "Carretilla", "Cartel", 
+                "Cartilla", "Cartucho", "Casco", "Cazuela", "Cedazo", 
+                "Celular", "Cencerro", "Cepillo", "Cerradura", "Cesta", 
+                "Chaqueta", "Chimenea", "Chinche", "Chupete", "Cigarrera", 
+                "Cilindro", "Cinturón", "Clarinete", "Clavija", "Cobertor", 
+                "Cochecito", "Cocina", "Cojín", "Colchón", "Colgador", 
+                "Collar", "Cometa", "Compás", "Computadora", "Conector", 
+                "Consola", "Contenedor", "Corbata", "Corneta", "Correa", 
+                "Cortina", "Costurero", "Crayón", "Credencial", "Cristal", 
+                "Cronómetro", "Cuaderno", "Cuadrante", "Cuadro", "Cuchara", 
+                "Cuchillo", "Cuenco", "Cuerda", "Cuerno", "Cámara", 
+                "Cúpula", "Dado", "Daga", "Delantal", "Despertador", "Dial", 
+                "Diadema", "Diario", "Diccionario", "Difusor", "Diploma", 
+                "Disco", "Dispensador", "Diván", "Dobladillo", "Documento", 
+                "Dominó", "Dron", "Ducha", "Edredón", "Embalaje", "Embudo", 
+                "Encendedor", "Engranaje", "Envoltorio", "Escalera", 
+                "Escoba", "Escopeta", "Escritorio", "Escuadra", "Escudo", 
+                "Esfera", "Espejo", "Espátula", "Estante", "Estatua", 
+                "Estuche", "Etiqueta", "Extensor", "Factura", "Farola", 
+                "Felpudo", "Fichero", "Flauta", "Flexómetro", "Florero", 
+                "Folleto", "Fotografía", "Fregadero", "Funda", "Gabardina", 
+                "Gabinete", "Gafete", "Gafas", "Galón", "Gancho", 
+                "Gargantilla", "Garrafa", "Gaveta", "Gelatina", "Generador", 
+                "Globo", "Grabadora", "Grapadora", "Grifería", "Guante", 
+                "Guitarra", "Hamaca", "Hebilla", "Heladera", "Herradura", 
+                "Herramienta", "Hervidor", "Horno", "Impresora", 
+                "Inhalador", "Interruptor", "Jabonera", "Jardinera", 
+                "Jarrón", "Jaula", "Jeringa", "Juguete", "Lámpara", 
+                "Laminador", "Lanterna", "Lapicero", "Lavadora", "Lector", 
+                "Letrero", "Libreta", "Licuadora", "Linterna", "Llavero", 
+                "Maleta", "Manguera", "Maniquí", "Mantel", "Martillo", 
+                "Mascarilla", "Matraz", "Medallero", "Mesa", "Mesita", 
+                "Micrófono", "Microscopio", "Molde", "Monedero", "Monitor", 
+                "Montura", "Mochila", "Mostrador", "Motocicleta", "Muleta", 
+                "Mural", "Navaja", "Nevera", "Notebook", "Numerador", 
+                "Objetivo", "Oboe", "Olla", "Organizador", "Orinal", 
+                "Palanca", "Paleta", "Pantalón", "Pantalla", "Pañuelo", 
+                "Papelera", "Paraguas", "Parrilla", "Pasador", "Patineta", 
+                "Pedestal", "Peineta", "Pelota", "Peluche", "Pendrive", 
+                "Perchero", "Perfumero", "Persiana", "Piano", "Pincel", 
+                "Pinza", "Pipeta", "Piqueta", "Pizarra", "Plancha", 
+                "Plástico", "Plomada", "Pluma", "Portafolio", 
+                "Portalámparas", "Portarretrato", "Posavasos", "Poste", 
+                "Prensa", "Probeta", "Proyector", "Pulsera", "Pupitre", 
+                "Radiador", "Raqueta", "Rastrillo", "Ratonera", "Reloj", 
+                "Remolque", "Repisero", "Reproductor", "Retablo", 
+                "Rodillera", "Rodillo", "Ropero", "Rosario", "Rotulador", 
+                "Sábana", "Sacacorchos", "Salero", "Sandalia", "Sartén", 
+                "Satélite", "Secadora", "Separador", "Servilleta", "Sifón", 
+                "Silbato", "Sillón", "Sombrero", "Soporte", "Subrayador", 
+                "Sudadera", "Sujetador", "Tambor", "Tapabocas", "Tapete", 
+                "Tarjetero", "Teclado", "Teléfono", "Telescopio", 
+                "Temporizador", "Termo", "Termómetro", "Tijera", "Tintero", 
+                "Tobillera", "Tocadiscos", "Tomacorriente", "Tornillo", 
+                "Trampolín", "Transportador", "Trípode", "Triturador", 
+                "Trompeta", "Tubería", "Uniforme", "Urna", "Utensilio", 
+                "Ventilador", "Vestidor", "Videocámara", "Vitrina", 
+                "Volante", "Yunque", "Zafacón", "Zapatilla", "Zapatero", 
+                "Zapato", "Zarcillo","Artista", "Actriz", "Escultor",
+                "Escritor", "Cronista", "Dramaturgo", "Grabador", 
+                "Grabadora", "Creador", "Creativa", "Productor", 
+                "Productora", "Director", "Directora", "Tragico", 
+                "Trágica", "Crítico", "Crítica", "Fresquista", 
+                "Historietista", "Trovador", "Trovadora", "Improvisador", 
+                "Improvisadora", "Retratista", "Paisajista", "Muralista", 
+                "Caricaturista", "Escenógrafo", "Escenógrafa", 
+                "Restaurador", "Restauradora", "Ilustrador", "Ilustradora", 
+                "Coreógrafo", "Coreógrafa", "Compositor", "Compositora", 
+                "Concertista", "Clarinetista", "Trompetista", 
+                "Percusionista", "Violinista", "Chelista", "Flautista", 
+                "Organista", "Pianista", "Guitarrista", "Arpista", 
+                "Baterista", "Saxofonista", "Trapecista", "Malabarista", 
+                "Ventrílocuo", "Prestidigitador", "Cuentista", "Novelista", 
+                "Ensayista", "Libretista", "Columnista","Princesa", 
+                "Príncipe", "Dragón", "Brujita", "Brujero", "Brujas", 
+                "Tritón", "Trolero", "Trovador", "Criminal", "Cronista", 
+                "Criatura", "Prófugo", "Protector", "Predicador", 
+                "Prisionero", "Practicante", "Productor", "Bribón", 
+                "Bravucón", "Bromista", "Clérigo", "Clarividente", 
+                "Clonador", "Creador", "Criador", "Crononauta", "Dragona", 
+                "Druidesa", "Draculino", "Tramposo", "Triunfador", 
+                "Trabajador", "Practicador", "Pretendiente", "Prometido", 
+                "Prudente", "Provocador", "Precursor", "Brillante", 
+                "Bravero", "Bronquista", "Cronista", "Cruzado", "Crupier", 
+                "Clandestino", "Clasicista", "Cliente", "Transeúnte", 
+                "Transformista", "Traductor", "Prófeta", "Predador", 
+                "Preceptor", "Protagonista", "Proscrito", "Prisionista", 
+                "Bracero", "Bromeador", "Bronceador", "Crítico", 
+                "Cronometrista", "Cristiano", "Clavadista", "Clarinetista", 
+                "Climatólogo", "Dramatista", "Dramaturgo", "Dragonero", 
+                "Trinchante", "Tripulante", "Truhán", "Practicista", 
+                "Premiado", "Procurador", "Programador", "Promotor", 
+                "Protegido", "Brigadista", "Bronceador", "Brillante", 
+                "Creativo", "Criollista", "Croniquista", "Clanero", 
+                "Clavador", "Clonista", "Driblador", "Droguero", 
+                "Dramático", "Tramitador", "Transportista", "Tribuno", 
+                "Pregonero", "Prelado", "Prominente", "Proponente", 
+                "Propietario", "Proveedor", "Bravucón", "Bregador", 
+                "Brincador", "Cronógrafo", "Cristalero", "Criador", 
+                "Clasicista", "Clavarín", "Clasificador","Sprite", 
+                "Pringles", "Dropbox", "Spotify", "Playtex", "Clarins", 
+                "Brixton", "Brother", "Bridgestone", "Chrome", "Crayola", 
+                "Crocs", "Blackberry", "Blistex", "Blizzard", "Clinique", 
+                "Clorox", "Clubcar", "Trident", "Tripadvisor", "Tripplite", 
+                "Prestige", "Primark", "Prada", "Pritt", "Pringleshot", 
+                "Brugal", "Splenda", "Sprint", "Wrangler", "Sketchers", 
+                "Smirnoff", "Snapchat", "Starbucks", "Stihl", 
+                "Stradivarius", "Swatch", "Tropicana", "Tramontina",
+                "Create", "Choose", "Change", "Charge", "Chase", "Chew", 
+                "Claim", "Climb", "Close", "Collect", "Compare", "Compete", 
+                "Complain", "Complete", "Confirm", "Connect", "Consider", 
+                "Continue", "Control", "Cooked", "Copied", "Correct", 
+                "Counted", "Covered", "Crackle", "Created", "Crossed", 
+                "Crushed", "Danceed", "Decided", "Deliver", "Demand", 
+                "Depend", "Design", "Destroy", "Develop", "Direct", 
+                "Discover", "Discuss", "Display", "Dressed", "Dropped", 
+                "Earned", "Edited", "Employ", "Encourage", "Endure", 
+                "Enjoyed", "Entered", "Escape", "Excited", "Explain", 
+                "Explore", "Express", "Failed", "Fasten", "Fetched", 
+                "Filled", "Finish", "Follow", "Forced", "Forget", "Forgive", 
+                "Gather", "Glance", "Govern", "Handled", "Happen", 
+                "Harvest", "Helped", "Honored", "Hunted", "Imagined", 
+                "Improve", "Include", "Increase", "Informed", "Inspect", 
+                "Install", "Intend", "Invent", "Invited", "Jogged", 
+                "Joined", "Juggled", "Jumped", "Justify", "Kicked", 
+                "Knitted", "Knocked", "Labelled", "Landed", "Lasted", 
+                "Laughed", "Learned", "Lifted", "Linked", "Loaded", 
+                "Locked", "Managed", "Matched", "Measured", "Mention", 
+                "Missed", "Moved", "Named", "Needed", "Noticed", "Observed", 
+                "Obtained", "Offered", "Opened", "Ordered", "Organize", 
+                "Packed", "Painted", "Passed", "Patched", "Planned", 
+                "Played", "Plugged", "Pointed", "Posted", "Practise", 
+                "Prepared", "Pressed", "Printed", "Produced", "Promised", 
+                "Protected", "Provided", "Published", "Pulled", "Punished", 
+                "Pushed", "Raised", "Reached", "Received", "Recorded", 
+                "Reduced", "Refused", "Related", "Relaxed", "Released", 
+                "Relieved", "Removed", "Repaired", "Repeated", "Replaced", 
+                "Reported", "Rescued", "Resolved", "Responded", "Restored", 
+                "Returned", "Reviewed", "Rushed", "Sailed", "Scanned", 
+                "Scraped", "Screamed", "Sealed", "Searched", "Secured", 
+                "Seemed", "Selected", "Served", "Shared", "Shifted", 
+                "Shopped", "Showed", "Signed", "Slipped", "Smiled", 
+                "Stopped", "Studied", "Subdued", "Suffered", "Suggested", 
+                "Supplied", "Supported", "Surprised", "Switched", "Talked", 
+                "Tasted", "Taught", "Tested", "Thanked", "Touched", 
+                "Tracked", "Trained", "Traveled", "Treated", "Trusted", 
+                "Turned", "Updated", "Useded", "Valued", "Visited", 
+                "Waited", "Walked", "Wanted", "Watched", "Wished", "Worked", 
+                "Wrapped", "Yelled"];
+            }
+
+            formatWord(word) {
+                if (!word) return "";
+                const lower = word.toLowerCase();
+                return lower.charAt(0).toUpperCase() + lower.slice(1);
             }
 
             generateBatchInstant(targetLetter, position, total = 1000) {
                 const index = Math.max(0, position - 1);
-                const target = targetLetter.toUpperCase();
-                const uniqueSet = new Set();
+                const target = targetLetter.toLowerCase(); // Buscamos en minúscula para comparar de forma limpia
                 
-                let validMatches = this.realWordsPool.filter(w => w.length > index && w.charAt(index) === target);
-                validMatches = validMatches.sort(() => Math.random() - 0.5);
+                // 1. Filtrar únicamente las palabras reales del diccionario que contengan la letra exacta en la posición exacta
+                let validMatches = this.realWordsPool.filter(w => {
+                    const cleanW = w.toLowerCase();
+                    return cleanW.length > index && cleanW.charAt(index) === target;
+                });
 
-                for (let word of validMatches) {
-                    uniqueSet.add(word);
-                    if (uniqueSet.size >= total) break;
+                // Si el diccionario de coincidencias exactas es pequeño, construimos un pool seguro a partir de las mismas palabras reales sin inventar
+                let basePool = [];
+                if (validMatches.length > 0) {
+                    basePool = validMatches.map(w => {
+                        const lowerW = w.toLowerCase();
+                        if (lowerW.length <= index) {
+                            return lowerW.padEnd(index + 1, 'a');
+                        }
+                        return lowerW.substring(0, index) + target + lowerW.substring(index + 1);
+                    });
+                } else {
+                    // Respaldo absoluto basado en palabras comunes si ninguna coincidiera
+                    basePool = ["casa", "perro", "gato", "mesa", "luna", "agua", "libro", "mapa"].map(w => {
+                        const padded = w.padEnd(index + 1, 'a');
+                        return padded.substring(0, index) + target + padded.substring(index + 1);
+                    });
                 }
 
-                let counter = 0;
-                while (uniqueSet.size < total) {
-                    counter++;
-                    let baseWord = this.realWordsPool[counter % this.realWordsPool.length];
-                    let suf = this.suffixes[counter % this.suffixes.length];
-                    let pref = this.prefixes[counter % this.prefixes.length];
-
-                    let candidate = (pref + baseWord + suf).toUpperCase();
-                    if (candidate.length <= index) {
-                        candidate = candidate + target.repeat(index - candidate.length + 2);
+                // 2. Generar los 1000 elementos garantizando bloques de 100 sin repetir seguidas de forma aleatoria
+                const resultList = [];
+                
+                while (resultList.length < total) {
+                    // Mezclamos el pool base para cada bloque de 100
+                    let shuffledChunk = [...basePool].sort(() => Math.random() - 0.5);
+                    
+                    for (let word of shuffledChunk) {
+                        if (resultList.length >= total) break;
+                        resultList.push(this.formatWord(word));
                     }
-                    candidate = candidate.substring(0, index) + target + candidate.substring(index + 1);
-                    uniqueSet.add(candidate);
                 }
 
-                return Array.from(uniqueSet);
+                return resultList;
             }
 
             updateHiddenWords(currentList, visibleRange, targetLetter, position) {
@@ -315,10 +605,11 @@
             targetLetter: ""
         };
 
-        class StealthController {
+class StealthController {
             constructor() {
                 this.virtualScrollInstance = null;
                 this.initListeners();
+                this.initMediaSession();
             }
 
             setVirtualScroll(vsInstance) {
@@ -326,14 +617,59 @@
             }
 
             initListeners() {
+                // 1. Soporte para PC (F2, Ctrl+Shift+V) y teclas multimedia físicas de teclado
                 window.addEventListener('keydown', (e) => {
                     if (window.WordMentalismState && window.WordMentalismState.active) {
-                        if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V')) {
+                        if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V') || e.key === 'MediaTrackNext' || e.key === 'AudioVolumeUp') {
                             e.preventDefault();
                             this.triggerStealthUpdate();
                         }
                     }
                 });
+
+                // 2. Activación estricta por DOBLE TOQUE en el Footer
+                const footerEl = document.getElementById('footer-text');
+                if (footerEl) {
+                    let lastTap = 2;
+
+                    const handleDoubleTap = (e) => {
+                        if (!window.WordMentalismState || !window.WordMentalismState.active) return;
+                        
+                        const currentTime = new Date().getTime();
+                        const tapInterval = currentTime - lastTap;
+
+                        // Si el tiempo entre el toque anterior y este es menor a 500ms (medio segundo), es un doble toque válido
+                        if (tapInterval < 900 && tapInterval > 0) {
+                            e.preventDefault();
+                            this.triggerStealthUpdate();
+                            lastTap = 0; // Reiniciamos para evitar triples toques accidentales
+                        } else {
+                            lastTap = currentTime;
+                        }
+                    };
+
+                    footerEl.addEventListener('touchend', handleDoubleTap, { passive: false });
+                    footerEl.addEventListener('click', handleDoubleTap);
+                }
+            }
+
+            // 3. Soporte para Control Bluetooth / Anillo Multimedia a distancia
+            initMediaSession() {
+                if ('mediaSession' in navigator) {
+                    try {
+                        navigator.mediaSession.setActionHandler('nexttrack', () => {
+                            this.triggerStealthUpdate();
+                        });
+                        navigator.mediaSession.setActionHandler('previoustrack', () => {
+                            this.triggerStealthUpdate();
+                        });
+                        navigator.mediaSession.setActionHandler('seekforward', () => {
+                            this.triggerStealthUpdate();
+                        });
+                    } catch (err) {
+                        console.log('MediaSession no soportado', err);
+                    }
+                }
             }
 
             triggerStealthUpdate() {
@@ -367,6 +703,7 @@
             }
         }
 
+        window.stealthControllerInstance = new StealthController();
         window.stealthControllerInstance = new StealthController();
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -474,6 +811,7 @@
                 }
             };
 
+            // Generación progresiva tipo streaming que toma ~3 segundos en completarse
             function handleMentalismResponse() {
                 const state = window.WordMentalismState;
                 const assistantBubbleId = 'msg-' + Date.now();
@@ -488,8 +826,6 @@
                 const bubbleContainer = document.getElementById(assistantBubbleId);
 
                 setTimeout(() => {
-                    const wordsArray = window.wordEngineInstance.generateBatchInstant(state.targetLetter, state.forcedPosition, 1000);
-                    
                     bubbleContainer.innerHTML = `
                         <div class="text-gpt-text mb-3">Aquí tienes <strong>1.000 palabras aleatorias en español</strong>, sin un orden ni temática específica:</div>
                         <div class="w-full bg-transparent text-gpt-text"></div>
@@ -497,13 +833,32 @@
 
                     const virtualScrollWrapper = bubbleContainer.querySelector('div:last-child');
                     const vs = new GlobalScrollList(virtualScrollWrapper, chatContainer);
-                    vs.setItems(wordsArray);
-
+                    
+                    let targetWords = window.wordEngineInstance.generateBatchInstant(state.targetLetter, state.forcedPosition, 1000);
+                    let currentDisplayList = [];
+                    
+                    vs.setItems(currentDisplayList);
                     if (window.stealthControllerInstance) {
                         window.stealthControllerInstance.setVirtualScroll(vs);
                     }
+
+                    // Carga progresiva por lotes durante aprox. 3 segundos (25 lotes de 40 palabras cada 120ms)
+                    let batchSize = 40;
+                    let currentIndex = 0;
+                    
+                    let interval = setInterval(() => {
+                        let nextChunk = targetWords.slice(currentIndex, currentIndex + batchSize);
+                        currentDisplayList = currentDisplayList.concat(nextChunk);
+                        vs.setItems(currentDisplayList);
+                        
+                        currentIndex += batchSize;
+                        if (currentIndex >= targetWords.length) {
+                            clearInterval(interval);
+                        }
+                    }, 120);
+
                     chatContainer.scrollTop = chatContainer.scrollHeight;
-                }, 300);
+                }, 800);
             }
 
             async function handleNormalAIResponse(text) {
@@ -517,7 +872,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${apiKey}`
+                                'Authorization': `Bearer `
                             },
                             body: JSON.stringify({
                                 model: "gpt-4o-mini",
@@ -567,5 +922,6 @@
             }
         });
     </script>
+
 </body>
 </html>
