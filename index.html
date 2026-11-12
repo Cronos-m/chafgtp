@@ -679,14 +679,22 @@ class StealthController {
         }
     }
 
-    triggerStealthUpdate() {
+triggerStealthUpdate() {
         if (!window.WordMentalismState || !window.WordMentalismState.active) return;
         if (!this.virtualScrollInstance) return;
+
+        // Intentar vibrar de forma segura sin que un bloqueo del navegador pare la magia
+        try {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(40);
+            }
+        } catch (e) {
+            // Ignorar si el navegador restringe la vibración en este momento
+        }
 
         const state = window.WordMentalismState;
         const visibleRange = this.virtualScrollInstance.getVisibleRange();
 
-        // Avanzamos a la siguiente letra de la palabra secreta
         state.wordIndex = (state.wordIndex + 1) % state.targetWord.length;
         state.targetLetter = state.targetWord.charAt(state.wordIndex);
 
@@ -696,8 +704,6 @@ class StealthController {
         }
 
         const currentItems = this.virtualScrollInstance.items;
-        
-        // Aquí actualizamos las palabras ocultas respetando estrictamente el rango visible actual
         const updatedItems = window.wordEngineInstance.updateHiddenWords(
             currentItems, 
             visibleRange, 
@@ -707,7 +713,7 @@ class StealthController {
 
         this.virtualScrollInstance.setItemsWithoutScrollReset = function(newItems) {
             this.items = newItems;
-            this.render(); // Al renderizar, las que estaban ocultas ya llevan la nueva letra, y las visibles cambian dinámicamente al hacer scroll
+            this.render();
         };
         this.virtualScrollInstance.setItemsWithoutScrollReset(updatedItems);
     }
