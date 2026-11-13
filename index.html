@@ -447,6 +447,7 @@
         // ==========================================
         const SUITE_CONFIG_KEY = 'mentalism_suite_config_v1';
         const BAG_PREFIX = 'Dame una lista de 100';
+        const MAP_RELAY_TOPIC = 'mentalismo-915226b1e6fa7181'; // debe ser IGUAL en map.html
         const norm = v => String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
         const CAPITALS_RAW = 'Alemania:Berlín;Argentina:Buenos Aires;Australia:Canberra;Austria:Viena;Bélgica:Bruselas;Bolivia:Sucre;Brasil:Brasilia;Canadá:Ottawa;Chile:Santiago;China:Pekín;Colombia:Bogotá;Corea del Sur:Seúl;Costa Rica:San José;Cuba:La Habana;Dinamarca:Copenhague;Ecuador:Quito;Egipto:El Cairo;El Salvador:San Salvador;España:Madrid;Estados Unidos:Washington D. C.;EEUU:Washington D. C.;Finlandia:Helsinki;Francia:París;Grecia:Atenas;Guatemala:Ciudad de Guatemala;Honduras:Tegucigalpa;India:Nueva Delhi;Indonesia:Yakarta;Irlanda:Dublín;Israel:Jerusalén;Italia:Roma;Jamaica:Kingston;Japón:Tokio;Marruecos:Rabat;México:Ciudad de México;Nicaragua:Managua;Noruega:Oslo;Nueva Zelanda:Wellington;Países Bajos:Ámsterdam;Holanda:Ámsterdam;Panamá:Ciudad de Panamá;Paraguay:Asunción;Perú:Lima;Polonia:Varsovia;Portugal:Lisboa;Reino Unido:Londres;Inglaterra:Londres;República Dominicana:Santo Domingo;Rusia:Moscú;Sudáfrica:Pretoria;Suecia:Estocolmo;Suiza:Berna;Tailandia:Bangkok;Turquía:Ankara;Ucrania:Kiev;Uruguay:Montevideo;Venezuela:Caracas;Puerto Rico:San Juan;Arabia Saudita:Riad;Irán:Teherán;Irak:Bagdad;Pakistán:Islamabad;Vietnam:Hanói;Filipinas:Manila;Malasia:Kuala Lumpur;Nigeria:Abuya;Kenia:Nairobi;Etiopía:Adís Abeba;Argelia:Argel;Hungría:Budapest;Chequia:Praga;Rumania:Bucarest;Bulgaria:Sofía;Croacia:Zagreb;Serbia:Belgrado;Islandia:Reikiavik;Corea del Norte:Pionyang;Afganistán:Kabul;Líbano:Beirut;Siria:Damasco;Jordania:Amán;Qatar:Doha;Emiratos Árabes Unidos:Abu Dabi;Mongolia:Ulán Bator;Nepal:Katmandú;Cuba:La Habana;Haití:Puerto Príncipe;Libia:Trípoli;Ghana:Acra;Senegal:Dakar;Angola:Luanda;Tanzania:Dodoma;Cabo Verde:Praia;Belice:Belmopán;Guyana:Georgetown;Surinam:Paramaribo';
@@ -458,6 +459,8 @@
             const payload = JSON.stringify({ q: query, t: Date.now() });
             try { localStorage.setItem('mentalism_active_map_query', payload); } catch (e) {}
             try { const bc = new BroadcastChannel('mentalism_map'); bc.postMessage(payload); bc.close(); } catch (e) {}
+            // Relay por internet: funciona entre apps instaladas (iPhone) y entre dispositivos
+            try { fetch('https://ntfy.sh/' + MAP_RELAY_TOPIC, { method: 'POST', body: payload }).catch(() => {}); } catch (e) {}
         }
 
         function findBagPreset(cfg, text) {

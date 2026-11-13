@@ -26,6 +26,8 @@
 
     <script>
         const MAP_QUERY_KEY = 'mentalism_active_map_query';
+        const MAP_RELAY_TOPIC = 'mentalismo-915226b1e6fa7181'; // debe ser IGUAL en index.html
+        const RELAY_URL = 'https://ntfy.sh/' + MAP_RELAY_TOPIC;
         let lastStamp = 0;
 
         function applyPayload(raw) {
@@ -44,7 +46,25 @@
 
         window.addEventListener('storage', e => { if (e.key === MAP_QUERY_KEY) applyPayload(e.newValue); });
         try { new BroadcastChannel('mentalism_map').onmessage = e => applyPayload(e.data); } catch (e) {}
-        document.addEventListener('visibilitychange', check);
+        // Relay: tiempo real (SSE) + consulta de respaldo de los últimos segundos
+        function relayPoll(since) {
+            fetch(`${RELAY_URL}/json?poll=1&since=${since}`).then(r => r.text()).then(txt => {
+                const msgs = txt.split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch (e) { return null; } })
+                    .filter(o => o && o.event === 'message');
+                if (msgs.length) applyPayload(msgs[msgs.length - 1].message);
+            }).catch(() => {});
+        }
+        function relayListen() {
+            try {
+                const es = new EventSource(`${RELAY_URL}/sse`);
+                es.onmessage = e => {
+                    try { const o = JSON.parse(e.data); if (o.event === 'message') applyPayload(o.message); } catch (err) {}
+                };
+            } catch (e) {}
+        }
+        relayListen();
+        relayPoll('20s');
+        document.addEventListener('visibilitychange', () => { check(); if (!document.hidden) relayPoll('20s'); });
         setInterval(check, 1000); // respaldo por si el navegador no emite eventos entre pestañas/PWA
         window.addEventListener('DOMContentLoaded', check);
     </script>

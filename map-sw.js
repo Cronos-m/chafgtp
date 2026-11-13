@@ -1,4 +1,4 @@
-const CACHE = 'mapas-ia-v1';
+const CACHE = 'mapas-ia-v2';
 const SHELL = ['./map.html', './map-manifest.json', './icon-map.png'];
 
 self.addEventListener('install', e => {
