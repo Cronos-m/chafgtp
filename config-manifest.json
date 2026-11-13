@@ -1,24 +1,25 @@
 {
-  "name": "AjustesIA",
-  "short_name": "AjustesIA",
-  "description": "Cuaderno de notas rápidas",
+  "id": "./config.html",
+  "name": "Ajustes IA",
+  "short_name": "Ajustes IA",
   "start_url": "./config.html",
+  "scope": "./config.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#121212",
   "theme_color": "#121212",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-config.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icon-config.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

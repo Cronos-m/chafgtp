@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notas - Configuración</title>
+    <title>Ajustes IA</title>
     <link rel="icon" type="image/png" href="icon-config.png">
     <link rel="apple-touch-icon" href="icon-config.png">
     <link rel="manifest" href="config-manifest.json">
     <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-title" content="Ajustes IA">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -783,6 +784,13 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadConfig);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./config-sw.js', { scope: './config.html' }).catch(e => console.log('SW config error:', e));
+            });
+        }
     </script>
 </body>
 </html>
