@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Map Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html { width: 100%; height: 100%; margin: 0; padding: 0; background: #000; overflow: hidden; }
+        #map-frame { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <div id="placeholder" class="flex flex-col items-center justify-center h-full text-neutral-500 text-sm font-mono">
+        <span>Esperando búsqueda de Maps...</span>
+    </div>
+    <iframe id="map-frame" class="hidden" src=""></iframe>
+
+    <script>
+        const MAP_QUERY_KEY = 'mentalism_active_map_query';
+
+        function checkMapQuery() {
+            const query = localStorage.getItem(MAP_QUERY_KEY);
+            const iframe = document.getElementById('map-frame');
+            const placeholder = document.getElementById('placeholder');
+
+            if (query) {
+                // Usamos la vista de inserción de Google Maps para mostrar el mapa limpio
+                iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+                iframe.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+        }
+
+        // Escuchar cambios en tiempo real si está abierto en otra pestaña o dispositivo
+        window.addEventListener('storage', (e) => {
+            if (e.key === MAP_QUERY_KEY) {
+                checkMapQuery();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', checkMapQuery);
+    </script>
+</body>
+</html>

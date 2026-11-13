@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notas - Configuración</title>
+    <link rel="icon" type="image/png" href="icon-config.png">
+    <link rel="apple-touch-icon" href="icon-config.png">
+    <link rel="manifest" href="config-manifest.json">
+    <meta name="theme-color" content="#121212">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ececec;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .card {
+            background: #1e1e1e;
+            border: 1px solid #2e2e2e;
+            border-radius: 16px;
+        }
+        .tab-active {
+            background: #2e2e2e;
+            color: #ffffff;
+            border-color: #4a4a4a;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-20 bg-[#121212]/90 backdrop-blur-md border-b border-[#262626] px-4 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <img src="icon-config.png" alt="Icon" class="w-7 h-7 rounded-lg object-cover">
+            <h1 class="font-semibold text-base tracking-tight">Panel de Control</h1>
+        </div>
+        <span id="save-badge" class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 opacity-0 transition-opacity duration-300">
+            Guardado con éxito
+        </span>
+    </header>
+
+    <!-- Navegación por Pestañas -->
+    <nav class="px-4 pt-4 pb-2 flex gap-2 overflow-x-auto">
+        <button onclick="switchTab('bag')" id="tab-bag" class="tab-active flex-1 py-2.5 px-3 rounded-xl border border-transparent text-xs font-medium transition-all">
+            Force Bag
+        </button>
+        <button onclick="switchTab('images')" id="tab-images" class="flex-1 py-2.5 px-3 rounded-xl border border-transparent text-xs font-medium text-neutral-400 transition-all">
+            Imágenes
+        </button>
+        <button onclick="switchTab('map')" id="tab-map" class="flex-1 py-2.5 px-3 rounded-xl border border-transparent text-xs font-medium text-neutral-400 transition-all">
+            Map
+        </button>
+    </nav>
+
+    <main class="px-4 pt-2 max-w-xl mx-auto space-y-4">
+
+        <!-- ================= PESTAÑA 1: DIGITAL FORCE BAG ================= -->
+        <section id="section-bag" class="space-y-4">
+            <div class="card p-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold">Digital Force Bag</h2>
+                    <p class="text-xs text-neutral-400">Listas predeterminadas con forzaje exacto</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="bag-enabled" onchange="saveConfig()" class="sr-only peer">
+                    <div class="w-11 h-6 bg-neutral-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+            </div>
+
+            <!-- Selector de Rutina Guardada -->
+            <div class="card p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-medium text-neutral-300">Seleccionar Lista Activa</label>
+                    <button onclick="createNewBagPreset()" class="text-xs text-blue-400 font-medium">+ Crear nueva lista</button>
+                </div>
+                <select id="bag-preset-select" onchange="loadSelectedBagPreset()" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3 py-2.5 text-sm outline-none">
+                </select>
+            </div>
+
+            <!-- Campos de Edición de la Rutina Activa -->
+            <div class="card p-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">1. Nombre de la Lista (Reconocimiento)</label>
+                    <input type="text" id="bag-name" placeholder="Ej: Canciones, Películas, Bebidas" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">2. Palabra a forzar</label>
+                    <input type="text" id="bag-force-word" placeholder="Ej: Bohemian Rhapsody" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 text-amber-300 font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">3. Palabra clave identificadora (Disparador)</label>
+                    <input type="text" id="bag-trigger" placeholder="Ej: canciones" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-500">
+                    <p class="text-[11px] text-neutral-500 mt-1">Al digitar un número y doble espacio (ej: <span class="text-neutral-300 font-mono">42  </span>), se transformará en <span class="text-neutral-300 font-mono">"Dame una lista de 100 canciones"</span>.</p>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs text-neutral-400">4. Elementos de la Lista (Exactamente 100)</label>
+                        <span id="bag-count" class="text-xs font-mono text-neutral-400">0 / 100</span>
+                    </div>
+                    <textarea id="bag-list" rows="8" placeholder="Pega aquí tus 100 elementos uno por línea..." class="w-full bg-[#141414] border border-[#333] rounded-xl p-3 text-xs leading-relaxed outline-none focus:border-blue-500 font-mono"></textarea>
+                    
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#282828]">
+                        <button onclick="shuffleBagList()" class="text-xs px-3 py-2 rounded-lg bg-[#282828] hover:bg-[#333] text-neutral-300">Mezclar orden</button>
+                        <div class="flex gap-2">
+                            <button onclick="deleteCurrentBagPreset()" class="text-xs px-3 py-2 rounded-lg bg-red-500/10 text-red-400">Eliminar</button>
+                            <button onclick="saveCurrentBagPreset()" class="text-xs px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium">Guardar Lista</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PESTAÑA 2: IMÁGENES ================= -->
+        <section id="section-images" class="space-y-4 hidden">
+            <div class="card p-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold">Predicción de Imagen</h2>
+                    <p class="text-xs text-neutral-400">Simula 5s de carga y revela tu foto</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="img-enabled" onchange="saveConfig()" class="sr-only peer">
+                    <div class="w-11 h-6 bg-neutral-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+            </div>
+
+            <div class="card p-4 space-y-4">
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">Texto disparador en el chat</label>
+                    <input type="text" id="img-trigger" oninput="saveConfig()" placeholder="genera una imagen aleatoria" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-2">Imagen Predeterminada a Forzar</label>
+                    <label class="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-[#383838] rounded-2xl cursor-pointer bg-[#141414] hover:bg-[#191919] transition-colors overflow-hidden relative">
+                        <img id="img-preview" class="hidden w-full h-full object-contain p-2" alt="Preview">
+                        <div id="img-placeholder" class="flex flex-col items-center justify-center text-center p-4">
+                            <span class="text-xs text-neutral-300 font-medium">Toca para seleccionar imagen de la galería</span>
+                            <span class="text-[11px] text-neutral-500 mt-1">Se guardará de forma segura en local</span>
+                        </div>
+                        <input type="file" id="img-file-input" accept="image/*" onchange="handleImageUpload(event)" class="hidden">
+                    </label>
+                </div>
+                <button onclick="saveImagePresetData()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium">Guardar Imagen de Predicción</button>
+            </div>
+        </section>
+
+        <!-- ================= PESTAÑA 3: MAP ================= -->
+        <section id="section-map" class="space-y-4 hidden">
+            <div class="card p-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold">Búsqueda Silenciosa en Maps</h2>
+                    <p class="text-xs text-neutral-400">Envía la búsqueda a tu página `map.html`</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="map-enabled" onchange="saveConfig()" class="sr-only peer">
+                    <div class="w-11 h-6 bg-neutral-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+            </div>
+
+            <div class="card p-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">Disparador 1 (Capitales)</label>
+                    <input type="text" id="map-trigger-capital" oninput="saveConfig()" value="capital de" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">Disparador 2 (Lugares directos)</label>
+                    <input type="text" id="map-trigger-place" oninput="saveConfig()" value="lugar" class="w-full bg-[#141414] border border-[#333] rounded-xl px-3.5 py-2.5 text-sm outline-none focus:border-blue-500">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const STORAGE_KEY = 'mentalism_suite_config_v1';
+        let db;
+
+        const request = indexedDB.open('MentalismAssetsDB', 1);
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains('images')) db.createObjectStore('images');
+        };
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            loadSavedImagePreview();
+        };
+
+        let config = {
+            bag: {
+                enabled: false,
+                activePresetId: 'preset-canciones',
+                presets: [
+                    {
+                        id: 'preset-canciones',
+                        name: 'Canciones',
+                        forceWord: 'Queen - Bohemian Rhapsody',
+                        trigger: 'canciones',
+                        list: ['Queen - Bohemian Rhapsody',
+                                'Michael Jackson - Billie Jean',
+                                'The Weeknd - Blinding Lights',
+                                'Coldplay - Viva La Vida',
+                                'Imagine Dragons - Believer',
+                                'Ed Sheeran - Shape of You',
+                                'Bruno Mars - Just the Way You Are',
+                                'Adele - Rolling in the Deep',
+                                'Rihanna - Diamonds',
+                                'Lady Gaga - Bad Romance',
+                                'The Beatles - Hey Jude',
+                                'Elton John - Your Song',
+                                'ABBA - Dancing Queen',
+                                'Bon Jovi - Livin’ on a Prayer',
+                                'Guns N’ Roses - Sweet Child O’ Mine',
+                                'Nirvana - Smells Like Teen Spirit',
+                                'The Rolling Stones - Paint It Black',
+                                'AC/DC - Back in Black',
+                                'Metallica - Nothing Else Matters',
+                                'Pink Floyd - Another Brick in the Wall',
+                                'Luis Miguel - La Incondicional',
+                                'Juan Gabriel - Querida',
+                                'José José - El Triste',
+                                'Rocío Dúrcal - Amor Eterno',
+                                'Shakira - Antología',
+                                'Shakira - Hips Don’t Lie',
+                                'Juanes - A Dios le Pido',
+                                'Carlos Vives - La Gota Fría',
+                                'Fonseca - Te Mando Flores',
+                                'Morat - Cómo Te Atreves',
+                                'Maná - Rayando el Sol',
+                                'Maná - Clavado en un Bar',
+                                'Enrique Iglesias - Experiencia Religiosa',
+                                'Ricky Martin - Livin’ la Vida Loca',
+                                'Marc Anthony - Vivir Mi Vida',
+                                'Romeo Santos - Propuesta Indecente',
+                                'Aventura - Obsesión',
+                                'Prince Royce - Darte un Beso',
+                                'Luis Fonsi - Despacito',
+                                'Daddy Yankee - Gasolina',
+                                'Bad Bunny - Tití Me Preguntó',
+                                'Bad Bunny - Ojitos Lindos',
+                                'Karol G - Provenza',
+                                'Karol G - Si Antes Te Hubiera Conocido',
+                                'J Balvin - Mi Gente',
+                                'J Balvin - Ginza',
+                                'Maluma - Felices los 4',
+                                'Feid - Luna',
+                                'Rauw Alejandro - Todo de Ti',
+                                'Don Omar - Danza Kuduro',
+                                'Wisin & Yandel - Rakata',
+                                'Carlos Gardel - Por Una Cabeza',
+                                'Frank Sinatra - My Way',
+                                'Louis Armstrong - What a Wonderful World',
+                                'Whitney Houston - I Will Always Love You',
+                                'Celine Dion - My Heart Will Go On',
+                                'Mariah Carey - Hero',
+                                'Elvis Presley - Can’t Help Falling in Love',
+                                'Bob Marley - Three Little Birds',
+                                'John Lennon - Imagine',
+                                'Bryan Adams - (Everything I Do) I Do It for You',
+                                'Phil Collins - In the Air Tonight',
+                                'George Michael - Careless Whisper',
+                                'Bonnie Tyler - Total Eclipse of the Heart',
+                                'Journey - Don’t Stop Believin’',
+                                'Survivor - Eye of the Tiger',
+                                'The Police - Every Breath You Take',
+                                'Eurythmics - Sweet Dreams',
+                                'Madonna - Like a Prayer',
+                                'Britney Spears - Toxic',
+                                'Backstreet Boys - I Want It That Way',
+                                'Spice Girls - Wannabe',
+                                'Linkin Park - In the End',
+                                'Evanescence - Bring Me to Life',
+                                'Green Day - Boulevard of Broken Dreams',
+                                'The Killers - Mr. Brightside',
+                                'Maroon 5 - This Love',
+                                'OneRepublic - Counting Stars',
+                                'Avicii - Wake Me Up',
+                                'David Guetta ft. Sia - Titanium',
+                                'Calvin Harris - Summer',
+                                'Daft Punk - Get Lucky',
+                                'Luis Fonsi - Aquí Estoy Yo',
+                                'Camilo - Vida de Rico',
+                                'Sebastián Yatra - Tacones Rojos',
+                                'Manuel Turizo - La Bachata',
+                                'Grupo Niche - Cali Pachanguero',
+                                'Joe Arroyo - La Rebelión',
+                                'Diomedes Díaz - Tú Eres la Reina',
+                                'Binomio de Oro - Olvídala',
+                                'Carlos Gardel - El Día Que Me Quieras',
+                                'Los Ángeles Azules - Cómo Te Voy a Olvidar',
+                                'Selena - Como La Flor',
+                                'Marc Anthony - Ahora Quién',
+                                'Gloria Estefan - Mi Tierra',
+                                'Vicente Fernández - Volver, Volver',
+                                'Pedro Infante - Cien Años',
+                                'Chayanne - Torero',
+                                'Olga Tañón - Es Mentiroso']
+                    },
+                    {
+                        id: 'preset-peliculas',
+                        name: 'Películas',
+                        forceWord: 'El Gran Pez',
+                        trigger: 'peliculas',
+                        list: ['El origen',
+                                'Titanic',
+                                'Interestelar',
+                                'El padrino',
+                                'Forrest Gump',
+                                'Gladiador',
+                                'Matrix',
+                                'Avatar',
+                                'Jurassic Park',
+                                'El rey león',
+                                'Toy Story',
+                                'Buscando a Nemo',
+                                'Shrek',
+                                'Los increíbles',
+                                'Ratatouille',
+                                'Coco',
+                                'Encanto',
+                                'Intensamente',
+                                'Up',
+                                'Monsters, Inc.',
+                                'Volver al futuro',
+                                'Piratas del Caribe',
+                                'Harry Potter y la piedra filosofal',
+                                'El señor de los anillos: La comunidad del anillo',
+                                'Star Wars: Una nueva esperanza',
+                                'Los Vengadores',
+                                'Iron Man',
+                                'Spider-Man: Sin camino a casa',
+                                'Batman: El caballero de la noche',
+                                'Joker',
+                                'Deadpool',
+                                'Logan',
+                                'Pantera Negra',
+                                'Doctor Strange',
+                                'Guardianes de la Galaxia',
+                                'Capitán América: Civil War',
+                                'Thor: Ragnarok',
+                                'Top Gun: Maverick',
+                                'Misión imposible',
+                                'Rápidos y furiosos',
+                                'John Wick',
+                                'Mad Max: Furia en el camino',
+                                'Terminator 2',
+                                'Depredador',
+                                'Alien: El octavo pasajero',
+                                'El exorcista',
+                                'El conjuro',
+                                'La monja',
+                                'Annabelle',
+                                'It',
+                                'El resplandor',
+                                'Psicosis',
+                                'El aro',
+                                'Actividad paranormal',
+                                'La noche de los muertos vivientes',
+                                'Un lugar en silencio',
+                                'Hereditary',
+                                'Midsommar',
+                                'Fragmentado',
+                                'El sexto sentido',
+                                'Parásitos',
+                                'El club de la pelea',
+                                'Pulp Fiction',
+                                'Bastardos sin gloria',
+                                'Django sin cadenas',
+                                'Kill Bill',
+                                'El lobo de Wall Street',
+                                'El gran Gatsby',
+                                'La La Land',
+                                'Whiplash',
+                                'El discurso del rey',
+                                'Una mente brillante',
+                                'En busca de la felicidad',
+                                'La vida es bella',
+                                'El pianista',
+                                'Cadena perpetua',
+                                'Milagros inesperados',
+                                'El curioso caso de Benjamin Button',
+                                'El diario de Noah',
+                                'Orgullo y prejuicio',
+                                'Como si fuera la primera vez',
+                                '10 cosas que odio de ti',
+                                'Legalmente rubia',
+                                'Chicas pesadas',
+                                'El diablo viste a la moda',
+                                '¿Y dónde están las rubias?',
+                                'Mi pobre angelito',
+                                'Una esposa de mentira',
+                                'Son como niños',
+                                'Jumanji',
+                                'La máscara',
+                                'Ace Ventura',
+                                'Click: Perdiendo el control',
+                                'Superbad',
+                                '¿Qué pasó ayer?',
+                                'Eurotrip',
+                                'No se aceptan devoluciones',
+                                'El laberinto del fauno',
+                                'Roma',
+                                'Ciudad de Dios',
+                                'Relatos salvajes']
+                    },
+                    {
+                        id: 'preset-bebidas',
+                        name: 'Bebidas',
+                        forceWord: 'Mojito',
+                        trigger: 'bebidas',
+                        list: ['Agua de panela',
+                                'Mojito sin alcohol',
+                                'Café cappuccino',
+                                'Limonada de coco',
+                                'Jugo de mango',
+                                'Chocolate caliente',
+                                'Kumis',
+                                'Piña colada sin alcohol',
+                                'Té verde',
+                                'Malteada de Oreo',
+                                'Agua de coco',
+                                'Champús',
+                                'Café espresso',
+                                'Jugo de maracuyá',
+                                'Gaseosa de manzana',
+                                'Batido de fresa',
+                                'Masato',
+                                'Frappuccino',
+                                'Jugo de guanábana',
+                                'Leche de almendras',
+                                'Lulada',
+                                'Café americano',
+                                'Granizado de café',
+                                'Té chai',
+                                'Jugo de mora',
+                                'Agua con gas',
+                                'Chocolate frío',
+                                'Kombucha',
+                                'Jugo de naranja',
+                                'Malteada de chocolate',
+                                'Refresco de cola',
+                                'Jugo de lulo',
+                                'Café latte',
+                                'Salpicón',
+                                'Té de frutos rojos',
+                                'Agua de panela con limón',
+                                'Batido de banano',
+                                'Jugo de piña',
+                                'Gaseosa de naranja',
+                                'Leche de coco',
+                                'Cold brew',
+                                'Jugo de fresa',
+                                'Avena fría',
+                                'Soda de maracuyá',
+                                'Jugo de sandía',
+                                'Café mocha',
+                                'Chicha',
+                                'Té helado',
+                                'Bebida energética',
+                                'Jugo de guayaba',
+                                'Malteada de vainilla',
+                                'Agua',
+                                'Granizado de mango',
+                                'Café colombiano',
+                                'Jugo de papaya',
+                                'Leche de avena',
+                                'Gaseosa de uva',
+                                'Té de manzanilla',
+                                'Batido de chocolate',
+                                'Jugo de mandarina',
+                                'Agua tónica',
+                                'Colada de avena',
+                                'Café macchiato',
+                                'Jugo de durazno',
+                                'Yogur bebible',
+                                'Soda de limón',
+                                'Jugo de arándanos',
+                                'Bebida isotónica',
+                                'Té negro',
+                                'Gaseosa de limón',
+                                'Jugo de manzana',
+                                'Leche de soya',
+                                'Granizado de limón',
+                                'Capuchino de vainilla',
+                                'Jugo de zanahoria',
+                                'Raspado de frutas',
+                                'Kéfir',
+                                'Jugo de kiwi',
+                                'Ginger ale',
+                                'Jugo de cereza',
+                                'Frappé de caramelo',
+                                'Leche',
+                                'Jugo de melón',
+                                'Té de jazmín',
+                                'Suero oral',
+                                'Sangría sin alcohol',
+                                'Café helado',
+                                'Jugo de tomate',
+                                'Gaseosa de cola sin azúcar',
+                                'Té de limón',
+                                'Batido de vainilla',
+                                'Jugo de pepino',
+                                'Soda de frutos rojos',
+                                'Leche deslactosada',
+                                'Granizado de limón',
+                                'Jugo de piña',
+                                'Cóctel Shirley Temple',
+                                'Jugo de frutos rojos',
+                                'Agua de limón']
+                    },
+                    {
+                        id: 'preset-paises',
+                        name: 'Países',
+                        forceWord: 'Japón',
+                        trigger: 'paises',
+                        list: []
+                    }
+                ]
+            },
+            images: { enabled: false, trigger: 'genera una imagen aleatoria' },
+            map: { enabled: false, triggerCapital: 'capital de', triggerPlace: 'lugar' }
+        };
+
+        function loadConfig() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    config = { ...config, ...parsed };
+                } catch (e) {}
+            }
+
+            document.getElementById('bag-enabled').checked = config.bag.enabled;
+            document.getElementById('img-enabled').checked = config.images.enabled;
+            document.getElementById('img-trigger').value = config.images.trigger || 'genera una imagen aleatoria';
+            document.getElementById('map-enabled').checked = config.map.enabled;
+            document.getElementById('map-trigger-capital').value = config.map.triggerCapital || 'capital de';
+            document.getElementById('map-trigger-place').value = config.map.triggerPlace || 'lugar';
+
+            renderBagPresetsDropdown();
+            loadSelectedBagPreset();
+        }
+
+        function saveConfig() {
+            config.bag.enabled = document.getElementById('bag-enabled').checked;
+            config.images.enabled = document.getElementById('img-enabled').checked;
+            config.images.trigger = document.getElementById('img-trigger').value.trim();
+            config.map.enabled = document.getElementById('map-enabled').checked;
+            config.map.triggerCapital = document.getElementById('map-trigger-capital').value.trim();
+            config.map.triggerPlace = document.getElementById('map-trigger-place').value.trim();
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            showSavedBadge();
+        }
+
+        function showSavedBadge() {
+            const badge = document.getElementById('save-badge');
+            badge.style.opacity = '1';
+            clearTimeout(window._badgeTimer);
+            window._badgeTimer = setTimeout(() => { badge.style.opacity = '0'; }, 1500);
+        }
+
+        function renderBagPresetsDropdown() {
+            const select = document.getElementById('bag-preset-select');
+            select.innerHTML = '';
+            config.bag.presets.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = `Lista: ${p.name} (${p.trigger})`;
+                if (p.id === config.bag.activePresetId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadSelectedBagPreset() {
+            const select = document.getElementById('bag-preset-select');
+            config.bag.activePresetId = select.value;
+            const preset = config.bag.presets.find(p => p.id === config.bag.activePresetId) || config.bag.presets[0];
+            if (!preset) return;
+
+            document.getElementById('bag-name').value = preset.name;
+            document.getElementById('bag-force-word').value = preset.forceWord;
+            document.getElementById('bag-trigger').value = preset.trigger;
+            document.getElementById('bag-list').value = (preset.list || []).join('\n');
+            updateBagCounter();
+        }
+
+        function saveCurrentBagPreset() {
+            const preset = config.bag.presets.find(p => p.id === config.bag.activePresetId);
+            if (!preset) return;
+
+            preset.name = document.getElementById('bag-name').value.trim();
+            preset.forceWord = document.getElementById('bag-force-word').value.trim();
+            preset.trigger = document.getElementById('bag-trigger').value.trim();
+            
+            const rawLines = document.getElementById('bag-list').value
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            preset.list = rawLines;
+
+            renderBagPresetsDropdown();
+            updateBagCounter();
+            saveConfig();
+            alert('¡Lista guardada correctamente!');
+        }
+
+        function updateBagCounter() {
+            const rawLines = document.getElementById('bag-list').value.split('\n').filter(l => l.trim().length > 0);
+            const count = rawLines.length;
+            const el = document.getElementById('bag-count');
+            el.textContent = `${count} / 100`;
+            el.className = count === 100 ? 'text-xs font-mono text-emerald-400' : 'text-xs font-mono text-amber-400';
+        }
+
+        document.getElementById('bag-list').addEventListener('input', updateBagCounter);
+
+        function createNewBagPreset() {
+            const newId = 'preset-' + Date.now();
+            const newPreset = {
+                id: newId,
+                name: 'Nueva Lista',
+                forceWord: 'Predicción',
+                trigger: 'palabras',
+                list: Array.from({length: 100}, (_, i) => `Elemento ${i + 1}`)
+            };
+            config.bag.presets.push(newPreset);
+            config.bag.activePresetId = newId;
+            renderBagPresetsDropdown();
+            loadSelectedBagPreset();
+            saveConfig();
+        }
+
+        function deleteCurrentBagPreset() {
+            if (config.bag.presets.length <= 1) {
+                alert('Debe existir al menos una lista.');
+                return;
+            }
+            config.bag.presets = config.bag.presets.filter(p => p.id !== config.bag.activePresetId);
+            config.bag.activePresetId = config.bag.presets[0].id;
+            renderBagPresetsDropdown();
+            loadSelectedBagPreset();
+            saveConfig();
+        }
+
+        function shuffleBagList() {
+            let lines = document.getElementById('bag-list').value.split('\n').filter(l => l.trim().length > 0);
+            lines = lines.sort(() => Math.random() - 0.5);
+            document.getElementById('bag-list').value = lines.join('\n');
+            updateBagCounter();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                window._tempImageData = e.target.result;
+                showImagePreview(window._tempImageData);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveImagePresetData() {
+            if (!window._tempImageData || !db) {
+                alert('Selecciona una imagen primero.');
+                return;
+            }
+            const tx = db.transaction('images', 'readwrite');
+            tx.objectStore('images').put(window._tempImageData, 'forced_image_active');
+            tx.oncomplete = () => {
+                showSavedBadge();
+                alert('¡Imagen guardada correctamente!');
+            };
+        }
+
+        function loadSavedImagePreview() {
+            if (!db) return;
+            const tx = db.transaction('images', 'readonly');
+            const req = tx.objectStore('images').get('forced_image_active');
+            req.onsuccess = () => {
+                if (req.result) {
+                    window._tempImageData = req.result;
+                    showImagePreview(req.result);
+                }
+            };
+        }
+
+        function showImagePreview(src) {
+            const img = document.getElementById('img-preview');
+            const placeholder = document.getElementById('img-placeholder');
+            img.src = src;
+            img.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+
+        function switchTab(tab) {
+            ['bag', 'images', 'map'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('text-neutral-400');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('text-neutral-400');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadConfig);
+    </script>
+</body>
+</html>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChatGPT</title>
+    
+    <!-- Favicons e Icono de App -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+
+    <!-- PWA Meta Tags Nativos -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#212121">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ChatGPT">
+
+    <!-- Tailwind CSS -->
+    <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=5JNTpyHtjWzl_B2q74EoUTvKTNP4bsguqIw1pnLUwrIwvAm-H1SFIPOUrU_GXw3tZGNeAtgdFFR-fkmxs0Aa7-OiQ0rcUaebVLVanK1TVoUBwskGeB35cAYclhJ82kiRyXM4sHjc_CTK3ZadC2XU6qZWAVdB2Nyk8zAono_FpGe7KnTr-sGk-UQQU9huQlUT2RfuS0HLVnonOXoNB-D8BUSaOQab5z8l0Zl4clFcpFt2oURorKZsfczEbG83umoKNw0HZ1fgGtZ0yJzQwAtLzekfx3rBzg_9Rttk9aH8dATXNNzeiAf2eWZ-3Nba2OXU" charset="UTF-8"></script><script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gpt: {
+                            sidebar: '#171717',
+                            main: '#212121',
+                            hover: '#2a2a2a',
+                            border: '#2f2f2f',
+                            input: '#2f2f2f',
+                            text: '#ececec',
+                            muted: '#b4b4b4',
+                            bubbleUser: '#001a70'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+            background-color: #212121;
+            color: #ececec;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+        .logo-blanco { filter: brightness(0) invert(1); }
+    </style>
+</head>
+<body class="h-screen w-screen flex overflow-hidden">
+
+    <!-- OVERLAY MÓVIL PARA EL MENÚ LATERAL -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 md:hidden hidden transition-opacity"></div>
+
+    <!-- BARRA LATERAL -->
+    <aside id="sidebar" class="bg-gpt-sidebar w-[260px] flex-shrink-0 flex flex-col justify-between transition-transform duration-300 z-40 md:relative fixed inset-y-0 left-0 -translate-x-full md:translate-x-0 border-r border-gpt-border p-3 select-none">
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center justify-between px-2 py-1 mb-2">
+                <div class="flex items-center gap-2 font-semibold text-base tracking-tight">
+                    ChatGPT
+                </div>
+                <button onclick="toggleSidebar()" class="hidden md:flex p-1.5 rounded-lg hover:bg-gpt-hover text-gpt-muted hover:text-gpt-text">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                </button>
+            </div>
+
+            <button onclick="newChat()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full font-medium">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Chat nuevo
+            </button>
+            <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-dasharray="2 2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                Imágenes
+            </button>
+            <button onclick="toggleSettings()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gpt-hover text-sm transition-colors text-left w-full text-gpt-text/90">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9c.69 0 1.33.28 1.8.77l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33Z"></path></svg>
+                Configuración
+            </button>
+        </div>
+
+        <div class="border-t border-gpt-border pt-3 pb-2 flex flex-col gap-3">
+            <div class="px-2">
+                <p class="text-sm font-semibold text-gpt-text mb-1">Obtén respuestas personalizadas</p>
+                <p class="text-xs text-gpt-muted leading-relaxed">Inicia sesión para obtener respuestas basadas en chats guardados.</p>
+            </div>
+            <button onclick="toggleSettings()" class="w-full bg-gpt-text text-black font-medium py-2.5 px-4 rounded-full text-sm hover:opacity-95 transition-opacity text-center">
+                Iniciar sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="flex-1 flex flex-col h-full w-full relative bg-gpt-main overflow-hidden">
+        
+        <!-- Header superior -->
+        <header class="flex items-center justify-between px-4 py-3 bg-gpt-main z-10 flex-shrink-0 w-full">
+            <button onclick="toggleSidebar()" class="md:hidden p-2 -ml-2 text-gpt-text hover:bg-gpt-hover rounded-lg">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-6 w-6"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+
+            <span class="md:hidden font-semibold text-base">ChatGPT</span>
+            <div class="md:hidden w-6"></div>
+
+            <div class="hidden md:flex items-center gap-3 ml-auto">
+                <button onclick="toggleSettings()" class="bg-white text-black font-medium px-4 py-2 rounded-full text-sm hover:opacity-95 transition-opacity">Iniciar sesión</button>
+                <button onclick="toggleSettings()" class="bg-[#2f2f2f] border border-gpt-border text-gpt-text font-medium px-4 py-2 rounded-full text-sm hover:bg-gpt-hover transition-colors">Regístrate gratis</button>
+            </div>
+
+            <button onclick="toggleSettings()" class="md:hidden bg-white text-black font-medium px-3.5 py-1.5 rounded-full text-xs">Iniciar sesión</button>
+        </header>
+
+        <!-- Área de Conversación -->
+        <div id="chat-container" class="flex-1 overflow-y-auto px-4 md:px-0 pb-44 pt-6 w-full">
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto px-4">
+                <h1 id="welcome-title" class="text-2xl font-semibold text-gpt-text mb-6 tracking-tight">¿Por dónde empezamos?</h1>
+            </div>
+
+            <div id="messages-list" class="flex flex-col space-y-6 max-w-3xl mx-auto w-full hidden"></div>
+        </div>
+
+        <!-- BARRA INFERIOR DE ESCRITURA -->
+        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-gpt-main via-gpt-main pt-6 pb-5 z-20 flex flex-col items-center justify-center px-4">
+            
+            <div class="w-[calc(100%-2rem)] max-w-3xl mx-auto flex flex-col items-center">
+                
+                <div class="relative bg-gpt-input rounded-3xl border border-transparent focus-within:border-gray-500/50 shadow-lg flex items-center px-3.5 py-2.5 w-full">
+                    <button class="text-gpt-muted hover:text-gpt-text p-1 flex-shrink-0 mr-2">
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-5 w-5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+
+                    <textarea id="user-input" rows="1" placeholder="Preguntar a ChatGPT" class="w-full bg-transparent resize-none outline-none text-gpt-text text-sm max-h-48 leading-relaxed placeholder-gpt-muted self-center pt-0.5"></textarea>
+                    
+                    <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                        <button class="text-gpt-muted hover:text-gpt-text p-1">
+                            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-5 w-5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                        </button>
+                        <button id="send-btn" onclick="sendMessage()" class="bg-blue-600 text-white p-2 rounded-full hover:opacity-90 disabled:bg-[#383838] disabled:text-gpt-muted transition-all flex items-center justify-center w-8 h-8" disabled>
+                            <svg id="btn-icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" class="h-4 w-4"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer protegido contra selección y habilitado para doble toque -->
+                <div id="footer-text" class="text-center text-[11px] text-gpt-muted/70 mt-3 w-full select-none" style="user-select: none; -webkit-user-select: none;">
+                    ChatGPT es IA. Al usarlo, aceptas los <a href="#" class="underline">Términos</a> y la <a href="#" class="underline">Política de privacidad</a>.<span id="magic-indicator" class="inline"></span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal de Configuración -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-[#2f2f2f] border border-gpt-border p-6 rounded-2xl max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-2 text-gpt-text">Configurar API Key de IA</h3>
+            <p class="text-sm text-gpt-muted mb-4">Ingresa tu API Key para habilitar respuestas reales de IA en modo normal.</p>
+            <input type="password" id="api-key-input" placeholder="sk-..." class="w-full bg-[#212121] border border-gpt-border rounded-xl px-4 py-3 text-sm outline-none focus:border-gray-500 mb-5 text-gpt-text">
+            <div class="flex justify-end gap-3">
+                <button onclick="toggleSettings()" class="px-4 py-2 rounded-xl text-sm hover:bg-gpt-hover text-gpt-muted">Cancelar</button>
+                <button onclick="saveApiKey()" class="px-4 py-2 rounded-xl text-sm bg-white text-black font-medium hover:opacity-95">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+            });
+        }
+
+        class WordEngine {
+            constructor() {
+                this.realWordsPool = window.REAL_WORDS_DICTIONARY || ["Abrazar", "Abrigar", "Abrumar", "Absorber", "Absolver", "Abultar", "Acceder", "Accionar", "Aclarar", "Acoblar", "Acoger", "Acoplar", "Acortar", "Acostar", "Actuar", "Adaptar", "Adherir", "Admirar", "Admitir", "Adoptar", "Adorar", "Adquirir", "Advertir", "Afeitar", "Afianzar", "Afilar", "Afinar", "Aflojar", "Afrontar", "Agachar", "Agradar", "Agrandar", "Agravar", "Agregar", "Agrupar", "Aguardar", "Aguantar", "Ahondar", "Aislar", "Ajustar", "Alabar", "Albergar", "Alcanzar", "Alertar", "Alfombrar", "Aligerar", "Alimentar", "Aliviar", "Almacenar", "Almorzar", "Alterar", "Alternar", "Alumbrar", "Amansar", "Amenazar", "Aminorar", "Amoblar", "Amoldar", "Amontonar", "Amparar", "Amplificar", "Anclar", "Anhelar", "Animar", "Anotar", "Anular", "Aplacar", "Aplastar", "Aplazar", "Aplicar", "Aportar", "Apreciar", "Apresar", "Aprender", "Aprobar", "Apropiar", "Archivar", "Argumentar", "Armonizar", "Arreglar", "Arrendar", "Arriesgar", "Arrimar", "Arruinar", "Asaltar", "Asentar", "Asignar", "Asistir", "Asociar", "Asombrar", "Aspirar", "Astillar", "Atacar", "Atajar", "Atender", "Atenuar", "Atesorar", "Atestar", "Atinar", "Atizar", "Atornillar", "Atraer", "Atribuir", "Auditar", "Aumentar", "Ausentar", "Autorizar", "Avanzar", "Aventajar", "Averiar", "Avisar", "Azuzar", "Blanquear", "Bloquear", "Bombear", "Bordear", "Bostezar", "Bracear", "Bramar", "Brillar", "Brincar", "Brindar", "Bromear", "Broncear", "Brotar", "Bruñir", "Buscar", "Cabalgar", "Calentar", "Calificar", "Cambiar", "Caminar", "Cancelar", "Cantar", "Capacitar", "Capturar", "Cargar", "Castrar", "Celebrar", "Censurar", "Centrar", "Cerrar", "Clasificar", "Clausurar", "Cobijar", "Cobrar", "Codificar", "Colaborar", "Colapsar", "Coleccionar", "Colisionar", "Colmar", "Colocar", "Combinar", "Combatir", "Comentar", "Comenzar", "Comparar", "Compensar", "Competir", "Compilar", "Completar", "Componer", "Comprobar", "Computar", "Comunicar", "Concentrar", "Conciliar", "Condenar", "Condensar", "Conectar", "Confesar", "Configurar", "Confirmar", "Conformar", "Congelar", "Congeniar", "Conjugar", "Conquistar", "Conservar", "Consolidar", "Constatar", "Constituir", "Construir", "Consultar", "Consumar", "Consumir", "Contactar", "Contemplar", "Contestar", "Continuar", "Contratar", "Controlar", "Convencer", "Conversar", "Convocar", "Corregir", "Cosechar", "Costear", "Crear", "Cruzar", "Cuadrar", "Cuestionar", "Cultivar", "Cumplir", "Curarse", "Debatir", "Debilitar", "Decidir", "Declarar", "Decorar", "Dedicar", "Defender", "Definir", "Degustar", "Delegar", "Delimitar", "Delinear", "Demorar", "Demostrar", "Denunciar", "Depender", "Depurar", "Derribar", "Derrotar", "Desarmar", "Desatar", "Desbordar", "Descansar", "Descartar", "Descifrar", "Descubrir", "Descuidar", "Desear", "Deslizar", "Desmontar", "Desobedecer", "Desocupar", "Despegar", "Despeinar", "Desplazar", "Despreciar", "Destacar", "Destapar", "Destinar", "Destrozar", "Desvelar", "Desviar", "Detectar", "Determinar", "Devolver", "Dibujar", "Dictar", "Digitalizar", "Dilatar", "Dirigir", "Disculpar", "Diseñar", "Disfrutar", "Disparar", "Disponer", "Distribuir", "Dividir", "Divulgar", "Doblegar", "Documentar", "Dominar", "Dormitar", "Drenar", "Ducharse", "Educar", "Ejecutar", "Ejercitar", "Elaborar", "Elevar", "Eliminar", "Embarcar", "Embellecer", "Embolsar", "Emigrar", "Emitir", "Empacar", "Empatar", "Empeorar", "Emplear", "Empujar", "Encajar", "Encantar", "Encender", "Encerrar", "Enchufar", "Encomendar", "Encontrar", "Enderezar", "Endulzar", "Enfocar", "Enfriar", "Engañar", "Engordar", "Engranar", "Enjuagar", "Enlazar", "Enlistar", "Enmarcar", "Enriquecer", "Ensayar", "Enseñar", "Entender", "Enterrar", "Entonar", "Entrenar", "Entregar", "Enumerar", "Enviar", "Escalar", "Escanear", "Escapar", "Escoger", "Escoltar", "Esconder", "Escribir", "Escuchar", "Esculpir", "Esforzar", "Esmerar", "Esperar", "Espiar", "Establecer", "Estacionar", "Estallar", "Estimar", "Estimular", "Estirar", "Estrenar", "Estudiar", "Evitar", "Exaltar", "Excavar", "Excluir", "Explorar", "Explotar", "Expresar", "Extender", "Extraer", "Fabricar", "Facilitar", "Facturar", "Festejar", "Fijarse", "Filtrar", "Financiar", "Fiscalizar", "Flanquear", "Florecer", "Fluctuar", "Focalizar", "Forjar", "Formatear", "Formular", "Fortalecer", "Fraccionar", "Fraguar", "Frenar", "Frotar", "Frustrar", "Funcionar", "Fundar", "Fusionar", "Galopar", "Garantizar", "Gobernar", "Golpear", "Graduar", "Granjear", "Gratificar", "Gravar", "Habitar", "Habilitar", "Hidratar", "Honrar", "Hospedar", "Humanizar", "Identificar", "Ignorar", "Igualar", "Iluminar", "Imaginar", "Impactar", "Implantar", "Implicar", "Importar", "Improvisar", "Impulsar", "Inaugurar", "Incentivar", "Incitar", "Incluir", "Indagar", "Indicar", "Inducir", "Inflamar", "Influir", "Informar", "Ingerir", "Ingresar", "Inhalar", "Inhibir", "Iniciar", "Innovar", "Inquietar", "Inscribir", "Insistir", "Inspirar", "Instalar", "Integrar", "Intensificar", "Intentar", "Interactuar", "Intercambiar", "Interesar", "Intervenir", "Intimidar", "Intrigar", "Introducir", "Invitar", "Jactarse", "Jalonar", "Jubilar", "Juzgar", "Ladrar", "Lamentar", "Lanzar", "Lastimar", "Lavarse", "Legalizar", "Legitimar", "Lesionar", "Liberar", "Licenciar", "Liderar", "Liquidar", "Llamar", "Llegar", "Llenar", "Localizar", "Lograr", "Lubricar", "Luchar", "Madurar", "Magnificar", "Maquillar", "Malcriar", "Malgastar", "Mantener", "Manipular", "Manufacturar", "Marchar", "Martillar", "Meditar", "Mejorar", "Memorizar", "Mencionar", "Mercadear", "Merendar", "Mezclar", "Migrar", "Minimizar", "Mirarse", "Mitigar", "Modelar", "Modificar", "Modernizar", "Moldear", "Molestar", "Monitorear", "Montarse", "Motivar", "Mostrar", "Multiplicar", "Murmurar", "Navegar", "Negociar", "Nombrar", "Normalizar", "Notificar", "Numerar", "Obligar", "Observar", "Obtener", "Ocupar", "Ofrecer", "Olvidar", "Operar", "Optimizar", "Ordenar", "Organizar", "Orientar", "Orquestar", "Oscurecer", "Otorgar", "Pactar", "Padecer", "Pagarse", "Palpar", "Panificar", "Paralizar", "Parcelar", "Participar", "Patentar", "Patinar", "Patrocinar", "Patrullar", "Penalizar", "Percibir", "Perdonar", "Perfeccionar", "Permitir", "Persuadir", "Pintarse", "Planificar", "Plantear", "Poblar", "Ponderar", "Portarse", "Posicionar", "Potenciar", "Practicar", "Predicar", "Preferir", "Preparar", "Presentar", "Preservar", "Presionar", "Pretender", "Priorizar", "Privilegiar", "Procesar", "Procurar", "Producir", "Profundizar", "Programar", "Prohibir", "Prometer", "Pronosticar", "Propagar", "Proponer", "Proteger", "Protestar", "Publicar", "Pulverizar", "Purificar", "Quebrar", "Quedarse", "Quitar", "Racionar", "Ratificar", "Reabrir", "Reaccionar", "Reafirmar", "Reajustar", "Realizar", "Realojar", "Reanimar", "Reasignar", "Rebajar", "Recaudar", "Recetar", "Rechazar", "Reclamar", "Reclutar", "Recolectar", "Recomendar", "Reconocer", "Reconstruir", "Recopilar", "Recortar", "Recostar", "Recuperar", "Redactar", "Redoblar", "Reducir", "Reemplazar", "Reforzar", "Reformar", "Refrescar", "Refugiar", "Regalar", "Registrar", "Regular", "Rehabilitar", "Rehusar", "Reiniciar", "Reintegrar", "Reiterar", "Relacionar", "Relajar", "Relatar", "Relevar", "Remediar", "Remolcar", "Remontar", "Renombrar", "Renovar", "Renunciar", "Reordenar", "Reparar", "Repasar", "Repetir", "Replantear", "Reportar", "Representar", "Reproducir", "Resaltar", "Reservar", "Resguardar", "Respetar", "Respirar", "Responder", "Restringir", "Resultar", "Retardar", "Retener", "Retirar", "Retomar", "Revelar", "Revisar", "Revivir", "Robarse", "Rodearse", "Rotular", "Saborear", "Sacarse", "Saludar", "Salvarse", "Sancionar", "Saturar", "Seleccionar", "Sembrar", "Sentenciar", "Separar", "Señalar", "Simplificar", "Simular", "Sincronizar", "Situar", "Sobrar", "Socializar", "Soldar", "Solicitar", "Solucionar", "Sondear", "Sostener", "Subrayar", "Sufragar", "Sugerir", "Sumarse", "Suministrar", "Superar", "Supervisar", "Suprimir", "Suspender", "Sustentar", "Tabular", "Taladrar", "Tantear", "Tarifar", "Temblar", "Temperar", "Temporizar", "Terminar", "Testear", "Titular", "Tolerar", "Trabajar", "Traducir", "Tramitar", "Transformar", "Transmitir", "Transportar", "Trazar", "Tributar", "Triplicar", "Tropezar", "Ubicar", "Ultimar", "Unificar", "Uniformar", "Urbanizar", "Utilizar", "Vacilar", "Vacunar", "Valorar", "Venerar", "Ventilar", "Verificar", "Versionar", "Vestirse", "Viajar", "Vigilar", "Vincular", "Visitar", "Visualizar", "Vocalizar", "Voltear", "Vulnerar", "Yodurar", "Zambullir", "Zanquear", "Zigzaguear", "Zozobrar", "Abejorro", "Abubilla", "Acarina", "Achuara", "Agapornis", "Alacrán", "Albatros", "Alce", "Almeja", "Alondra", "Anaconda", "Anchoveta", "Antílope", "Araña", "Ardilla", "Armiño", "Atún", "Avestruz", "Babosa", "Bacalao", "Ballena", "Barracuda", "Becerro", "Bengalí", "Berberecho", "Bisonte", "Boa", "Bogavante", "Bonito", "Borrico", "Búfalo", "Buitre", "Burro", "Caballa", "Cabrito", "Cacatúa", "Cachalote", "Caimán", "Calamar", "Camaleón", "Camello", "Canario", "Cangrejo", "Canguro", "Capibara", "Caracol", "Cardenal", "Caribú", "Carnero", "Castor", "Cebra", "Cecilia", "Centollo", "Cerdito", "Cernícalo", "Chacal", "Chimpancé", "Chinche", "Chorlito", "Cigarra", "Cisne", "Ciervo", "Cocodrilo", "Codorniz", "Colibrí", "Comadreja", "Congrio", "Conejo", "Corvina", "Cotorra", "Coyote", "Crángrejo", "Crótalo", "Cuervo", "Delfín", "Demonio", "Dorado", "Dragón", "Erizo", "Escarabajo", "Escorpión", "Estornino", "Faisán", "Flamenco", "Foca", "Gallina", "Gallo", "Gamba", "Gamo", "Ganso", "Garrapata", "Gavilán", "Geco", "Golondrina", "Gorila", "Grillo", "Guacamayo", "Guepardo", "Halcón", "Hamster", "Hiena", "Hipocampo", "Hipopótamo", "Hormiga", "Hurón", "Iguana", "Impala", "Jabalí", "Jaguar", "Jilguero", "Jirafa", "Koala", "Lagarto", "Langosta", "Lechuza", "León", "Leopardo", "Libélula", "Liebre", "Lince", "Lombriz", "Loro", "Luciérnaga", "Macaco", "Mandril", "Mariposa", "Marmota", "Medusa", "Mejillón", "Merluza", "Mirlo", "Mono", "Morsa", "Mosquito", "Murciélago", "Narval", "Nutria", "Ocelote", "Orangután", "Orca", "Ornitorrinco", "Ostra", "Paloma", "Pantera", "Pardela", "Pato", "Pavo", "Pelícano", "Perdiz", "Perico", "Perrito", "Petirrojo", "Pez", "Pingüino", "Piraña", "Pitón", "Pulgón", "Pulpo", "Puma", "Quebrantahuesos", "Ratón", "Rinoceronte", "Ruiseñor", "Sabueso", "Salmón", "Sanguijuela", "Sardina", "Serpiente", "Tarántula", "Tejón", "Tiburón", "Tórtola", "Tortuga", "Trucha", "Turpial", "Urraca", "Venado", "Víbora", "Vicuña", "Zampullín", "Zancudo", "Zarigüeya", "Zorzal", "Abanico", "Abridor", "Abrelatas", "Acuario", "Adaptador", "Agenda", "Agujeta", "Ajedrez", "Alarma", "Alfiler", "Alfombra", "Aljaba", "Almohada", "Altavoz", "Anclaje", "Andador", "Anillo", "Antena", "Aparador", "Aparato", "Archivador", "Armario", "Arnés", "Arpón", "Asiento", "Aspirador", "Auricular", "Autobús", "Azadón", "Balanza", "Balde", "Ballesta", "Bañera", "Banderín", "Banqueta", "Baraja", "Baranda", "Barbacoa", "Barrena", "Barril", "Báscula", "Bastidor", "Batidora", "Baúl", "Bengala", "Berbiquí", "Biberón", "Bicicleta", "Binoculares", "Biombo", "Bitácora", "Blusa", "Boquilla", "Borrador", "Botella", "Botiquín", "Bóveda", "Brújula", "Buzón", "Caballete", "Cabecera", "Cableado", "Cacerola", "Cadena", "Cajero", "Calculadora", "Caldera", "Calendario", "Calzado", "Camiseta", "Campana", "Candado", "Candelabro", "Canasta", "Canasto", "Canica", "Cañería", "Capucha", "Carpeta", "Carretilla", "Cartel", "Cartilla", "Cartucho", "Casco", "Cazuela", "Cedazo", "Celular", "Cencerro", "Cepillo", "Cerradura", "Cesta", "Chaqueta", "Chimenea", "Chinche", "Chupete", "Cigarrera", "Cilindro", "Cinturón", "Clarinete", "Clavija", "Cobertor", "Cochecito", "Cocina", "Cojín", "Colchón", "Colgador", "Collar", "Cometa", "Compás", "Computadora", "Conector", "Consola", "Contenedor", "Corbata", "Corneta", "Correa", "Cortina", "Costurero", "Crayón", "Credencial", "Cristal", "Cronómetro", "Cuaderno", "Cuadrante", "Cuadro", "Cuchara", "Cuchillo", "Cuenco", "Cuerda", "Cuerno", "Cámara", "Cúpula", "Dado", "Daga", "Delantal", "Despertador", "Dial", "Diadema", "Diario", "Diccionario", "Difusor", "Diploma", "Disco", "Dispensador", "Diván", "Dobladillo", "Documento", "Dominó", "Dron", "Ducha", "Edredón", "Embalaje", "Embudo", "Encendedor", "Engranaje", "Envoltorio", "Escalera", "Escoba", "Escopeta", "Escritorio", "Escuadra", "Escudo", "Esfera", "Espejo", "Espátula", "Estante", "Estatua", "Estuche", "Etiqueta", "Extensor", "Factura", "Farola", "Felpudo", "Fichero", "Flauta", "Flexómetro", "Florero", "Folleto", "Fotografía", "Fregadero", "Funda", "Gabardina", "Gabinete", "Gafete", "Gafas", "Galón", "Gancho", "Gargantilla", "Garrafa", "Gaveta", "Gelatina", "Generador", "Globo", "Grabadora", "Grapadora", "Grifería", "Guante", "Guitarra", "Hamaca", "Hebilla", "Heladera", "Herradura", "Herramienta", "Hervidor", "Horno", "Impresora", "Inhalador", "Interruptor", "Jabonera", "Jardinera", "Jarrón", "Jaula", "Jeringa", "Juguete", "Lámpara", "Laminador", "Lanterna", "Lapicero", "Lavadora", "Lector", "Letrero", "Libreta", "Licuadora", "Linterna", "Llavero", "Maleta", "Manguera", "Maniquí", "Mantel", "Martillo", "Mascarilla", "Matraz", "Medallero", "Mesa", "Mesita", "Micrófono", "Microscopio", "Molde", "Monedero", "Monitor", "Montura", "Mochila", "Mostrador", "Motocicleta", "Muleta", "Mural", "Navaja", "Nevera", "Notebook", "Numerador", "Objetivo", "Oboe", "Olla", "Organizador", "Orinal", "Palanca", "Paleta", "Pantalón", "Pantalla", "Pañuelo", "Papelera", "Paraguas", "Parrilla", "Pasador", "Patineta", "Pedestal", "Peineta", "Pelota", "Peluche", "Pendrive", "Perchero", "Perfumero", "Persiana", "Piano", "Pincel", "Pinza", "Pipeta", "Piqueta", "Pizarra", "Plancha", "Plástico", "Plomada", "Pluma", "Portafolio", "Portalámparas", "Portarretrato", "Posavasos", "Poste", "Prensa", "Probeta", "Proyector", "Pulsera", "Pupitre", "Radiador", "Raqueta", "Rastrillo", "Ratonera", "Reloj", "Remolque", "Repisero", "Reproductor", "Retablo", "Rodillera", "Rodillo", "Ropero", "Rosario", "Rotulador", "Sábana", "Sacacorchos", "Salero", "Sandalia", "Sartén", "Satélite", "Secadora", "Separador", "Servilleta", "Sifón", "Silbato", "Sillón", "Sombrero", "Soporte", "Subrayador", "Sudadera", "Sujetador", "Tambor", "Tapabocas", "Tapete", "Tarjetero", "Teclado", "Teléfono", "Telescopio", "Temporizador", "Termo", "Termómetro", "Tijera", "Tintero", "Tobillera", "Tocadiscos", "Tomacorriente", "Tornillo", "Trampolín", "Transportador", "Trípode", "Triturador", "Trompeta", "Tubería", "Uniforme", "Urna", "Utensilio", "Ventilador", "Vestidor", "Videocámara", "Vitrina", "Volante", "Yunque", "Zafacón", "Zapatilla", "Zapatero", "Zapato", "Zarcillo", "Artista", "Actriz", "Escultor", "Escritor", "Cronista", "Dramaturgo", "Grabador", "Grabadora", "Creador", "Creativa", "Productor", "Productora", "Director", "Directora", "Tragico", "Trágica", "Crítico", "Crítica", "Fresquista", "Historietista", "Trovador", "Trovadora", "Improvisador", "Improvisadora", "Retratista", "Paisajista", "Muralista", "Caricaturista", "Escenógrafo", "Escenógrafa", "Restaurador", "Restauradora", "Ilustrador", "Ilustradora", "Coreógrafo", "Coreógrafa", "Compositor", "Compositora", "Concertista", "Clarinetista", "Trompetista", "Percusionista", "Violinista", "Chelista", "Flautista", "Organista", "Pianista", "Guitarrista", "Arpista", "Baterista", "Saxofonista", "Trapecista", "Malabarista", "Ventrílocuo", "Prestidigitador", "Cuentista", "Novelista", "Ensayista", "Libretista", "Columnista", "Princesa", "Príncipe", "Dragón", "Brujita", "Brujero", "Brujas", "Tritón", "Trolero", "Trovador", "Criminal", "Cronista", "Criatura", "Prófugo", "Protector", "Predicador", "Prisionero", "Practicante", "Productor", "Bribón", "Bravucón", "Bromista", "Clérigo", "Clarividente", "Clonador", "Creador", "Criador", "Crononauta", "Dragona", "Druidesa", "Draculino", "Tramposo", "Triunfador", "Trabajador", "Practicador", "Pretendiente", "Prometido", "Prudente", "Provocador", "Precursor", "Brillante", "Bravero", "Bronquista", "Cronista", "Cruzado", "Crupier", "Clandestino", "Clasicista", "Cliente", "Transeúnte", "Transformista", "Traductor", "Prófeta", "Predador", "Preceptor", "Protagonista", "Proscrito", "Prisionista", "Bracero", "Bromeador", "Bronceador", "Crítico", "Cronometrista", "Cristiano", "Clavadista", "Clarinetista", "Climatólogo", "Dramatista", "Dramaturgo", "Dragonero", "Trinchante", "Tripulante", "Truhán", "Practicista", "Premiado", "Procurador", "Programador", "Promotor", "Protegido", "Brigadista", "Bronceador", "Brillante", "Creativo", "Criollista", "Croniquista", "Clanero", "Clavador", "Clonista", "Driblador", "Droguero", "Dramático", "Tramitador", "Transportista", "Tribuno", "Pregonero", "Prelado", "Prominente", "Proponente", "Propietario", "Proveedor", "Bravucón", "Bregador", "Brincador", "Cronógrafo", "Cristalero", "Criador", "Clasicista", "Clavarín", "Clasificador", "Sprite", "Pringles", "Dropbox", "Spotify", "Playtex", "Clarins", "Brixton", "Brother", "Bridgestone", "Chrome", "Crayola", "Crocs", "Blackberry", "Blistex", "Blizzard", "Clinique", "Clorox", "Clubcar", "Trident", "Tripadvisor", "Tripplite", "Prestige", "Primark", "Prada", "Pritt", "Pringleshot", "Brugal", "Splenda", "Sprint", "Wrangler", "Sketchers", "Smirnoff", "Snapchat", "Starbucks", "Stihl", "Stradivarius", "Swatch", "Tropicana", "Tramontina", "Create", "Choose", "Change", "Charge", "Chase", "Chew", "Claim", "Climb", "Close", "Collect", "Compare", "Compete", "Complain", "Complete", "Confirm", "Connect", "Consider", "Continue", "Control", "Cooked", "Copied", "Correct", "Counted", "Covered", "Crackle", "Created", "Crossed", "Crushed", "Danceed", "Decided", "Deliver", "Demand", "Depend", "Design", "Destroy", "Develop", "Direct", "Discover", "Discuss", "Display", "Dressed", "Dropped", "Earned", "Edited", "Employ", "Encourage", "Endure", "Enjoyed", "Entered", "Escape", "Excited", "Explain", "Explore", "Express", "Failed", "Fasten", "Fetched", "Filled", "Finish", "Follow", "Forced", "Forget", "Forgive", "Gather", "Glance", "Govern", "Handled", "Happen", "Harvest", "Helped", "Honored", "Hunted", "Imagined", "Improve", "Include", "Increase", "Informed", "Inspect", "Install", "Intend", "Invent", "Invited", "Jogged", "Joined", "Juggled", "Jumped", "Justify", "Kicked", "Knitted", "Knocked", "Labelled", "Landed", "Lasted", "Laughed", "Learned", "Lifted", "Linked", "Loaded", "Locked", "Managed", "Matched", "Measured", "Mention", "Missed", "Moved", "Named", "Needed", "Noticed", "Observed", "Obtained", "Offered", "Opened", "Ordered", "Organize", "Packed", "Painted", "Passed", "Patched", "Planned", "Played", "Plugged", "Pointed", "Posted", "Practise", "Prepared", "Pressed", "Printed", "Produced", "Promised", "Protected", "Provided", "Published", "Pulled", "Punished", "Pushed", "Raised", "Reached", "Received", "Recorded", "Reduced", "Refused", "Related", "Relaxed", "Released", "Relieved", "Removed", "Repaired", "Repeated", "Replaced", "Reported", "Rescued", "Resolved", "Responded", "Restored", "Returned", "Reviewed", "Rushed", "Sailed", "Scanned", "Scraped", "Screamed", "Sealed", "Searched", "Secured", "Seemed", "Selected", "Served", "Shared", "Shifted", "Shopped", "Showed", "Signed", "Slipped", "Smiled", "Stopped", "Studied", "Subdued", "Suffered", "Suggested", "Supplied", "Supported", "Surprised", "Switched", "Talked", "Tasted", "Taught", "Tested", "Thanked", "Touched", "Tracked", "Trained", "Traveled", "Treated", "Trusted", "Turned", "Updated", "Useded", "Valued", "Visited", "Waited", "Walked", "Wanted", "Watched", "Wished", "Worked", "Wrapped", "Yelled"];
+            }
+
+            formatWord(word) {
+                if (!word) return "";
+                const lower = word.toLowerCase();
+                return lower.charAt(0).toUpperCase() + lower.slice(1);
+            }
+
+            generateBatchInstant(targetLetter, position, total = 1000) {
+                const index = Math.max(0, position - 1);
+                const target = targetLetter.toLowerCase();
+                
+                let validMatches = this.realWordsPool.filter(w => {
+                    const cleanW = w.toLowerCase();
+                    return cleanW.length > index && cleanW.charAt(index) === target;
+                });
+
+                let basePool = [];
+                if (validMatches.length > 0) {
+                    basePool = validMatches.map(w => {
+                        const lowerW = w.toLowerCase();
+                        if (lowerW.length <= index) {
+                            return lowerW.padEnd(index + 1, 'a');
+                        }
+                        return lowerW.substring(0, index) + target + lowerW.substring(index + 1);
+                    });
+                } else {
+                    basePool = ["casa", "perro", "gato", "mesa", "luna", "agua", "libro", "mapa"].map(w => {
+                        const padded = w.padEnd(index + 1, 'a');
+                        return padded.substring(0, index) + target + padded.substring(index + 1);
+                    });
+                }
+
+                const resultList = [];
+                while (resultList.length < total) {
+                    let shuffledChunk = [...basePool].sort(() => Math.random() - 0.5);
+                    for (let word of shuffledChunk) {
+                        if (resultList.length >= total) break;
+                        resultList.push(this.formatWord(word));
+                    }
+                }
+
+                return resultList;
+            }
+
+            updateHiddenWords(currentList, visibleRange, targetLetter, position) {
+                const newList = this.generateBatchInstant(targetLetter, position, currentList.length);
+                const updatedList = [...currentList];
+
+                let newIndex = 0;
+                for (let i = 0; i < updatedList.length; i++) {
+                    if (i < visibleRange.start || i > visibleRange.end) {
+                        while (newIndex < newList.length && currentList.includes(newList[newIndex])) {
+                            newIndex++;
+                        }
+                        if (newIndex < newList.length) {
+                            updatedList[i] = newList[newIndex];
+                            newIndex++;
+                        }
+                    }
+                }
+                return updatedList;
+            }
+        }
+
+        window.wordEngineInstance = new WordEngine();
+
+        class GlobalScrollList {
+            constructor(containerElement, scrollParent) {
+                this.container = containerElement;
+                this.scrollParent = scrollParent;
+                this.itemHeight = 28;
+                this.buffer = 20;
+                this.items = [];
+
+                this.container.style.position = 'relative';
+                this.container.style.width = '100%';
+
+                this.contentSpacer = document.createElement('div');
+                this.contentSpacer.style.position = 'absolute';
+                this.contentSpacer.style.top = '0';
+                this.contentSpacer.style.left = '0';
+                this.contentSpacer.style.right = '0';
+                this.container.appendChild(this.contentSpacer);
+
+                this.visibleContent = document.createElement('div');
+                this.visibleContent.style.position = 'absolute';
+                this.visibleContent.style.top = '0';
+                this.visibleContent.style.left = '0';
+                this.visibleContent.style.right = '0';
+                this.container.appendChild(this.visibleContent);
+
+                this.scrollParent.addEventListener('scroll', () => this.render(), { passive: true });
+            }
+
+            setItems(items) {
+                this.items = items;
+                const totalHeight = this.items.length * this.itemHeight;
+                this.contentSpacer.style.height = `${totalHeight}px`;
+                this.container.style.height = `${totalHeight}px`;
+                this.render();
+            }
+
+            getVisibleRange() {
+                const containerTop = this.container.getBoundingClientRect().top;
+                const scrollParentTop = this.scrollParent.getBoundingClientRect().top;
+                const relativeScrollTop = Math.max(0, scrollParentTop - containerTop);
+                const viewportHeight = this.scrollParent.clientHeight;
+
+                const startIndex = Math.max(0, Math.floor(relativeScrollTop / this.itemHeight) - this.buffer);
+                const endIndex = Math.min(this.items.length - 1, Math.floor((relativeScrollTop + viewportHeight) / this.itemHeight) + this.buffer);
+                return { start: startIndex, end: endIndex };
+            }
+
+            render() {
+                if (this.items.length === 0) return;
+                const range = this.getVisibleRange();
+
+                this.visibleContent.style.transform = `translateY(${range.start * this.itemHeight}px)`;
+
+                let html = '';
+                for (let i = range.start; i <= range.end; i++) {
+                    html += `
+                        <div class="flex items-center gap-2 text-sm text-gpt-text" style="height: ${this.itemHeight}px;">
+                            <span class="text-gpt-muted font-medium w-6 text-right">${i + 1}.</span>
+                            <span>${this.items[i]}</span>
+                        </div>
+                    `;
+                }
+                this.visibleContent.innerHTML = html;
+            }
+        }
+
+        window.WordMentalismState = {
+            active: false,
+            targetWord: "",
+            wordIndex: 0,
+            forcedPosition: 1,
+            targetLetter: ""
+        };
+
+        class StealthController {
+            constructor() {
+                this.virtualScrollInstance = null;
+                this.initListeners();
+                this.initMediaSession();
+            }
+
+            setVirtualScroll(vsInstance) {
+                this.virtualScrollInstance = vsInstance;
+            }
+
+            initListeners() {
+                window.addEventListener('keydown', (e) => {
+                    if (window.WordMentalismState && window.WordMentalismState.active) {
+                        if (e.key === 'F2' || (e.ctrlKey && e.shiftKey && e.key === 'V') || e.key === 'MediaTrackNext' || e.key === 'AudioVolumeUp') {
+                            e.preventDefault();
+                            this.triggerStealthUpdate();
+                        }
+                    }
+                });
+
+                const footerEl = document.getElementById('footer-text');
+                if (footerEl) {
+                    let lastTap = 0;
+
+                    const handleDoubleTap = (e) => {
+                        if (!window.WordMentalismState || !window.WordMentalismState.active) return;
+                        
+                        const currentTime = new Date().getTime();
+                        const tapInterval = currentTime - lastTap;
+
+                        if (tapInterval < 500 && tapInterval > 0) {
+                            e.preventDefault();
+                            try {
+                                if ('vibrate' in navigator) {
+                                    navigator.vibrate(40);
+                                }
+                            } catch (err) {}
+
+                            this.triggerStealthUpdate();
+                            lastTap = 0;
+                        } else {
+                            lastTap = currentTime;
+                        }
+                    };
+
+                    footerEl.addEventListener('touchend', handleDoubleTap, { passive: false });
+                    footerEl.addEventListener('click', handleDoubleTap);
+                }
+            }
+
+            initMediaSession() {
+                if ('mediaSession' in navigator) {
+                    try {
+                        navigator.mediaSession.setActionHandler('nexttrack', () => { 
+                            try { if ('vibrate' in navigator) navigator.vibrate(40); } catch(e){}
+                            this.triggerStealthUpdate(); 
+                        });
+                        navigator.mediaSession.setActionHandler('previoustrack', () => { 
+                            try { if ('vibrate' in navigator) navigator.vibrate(40); } catch(e){}
+                            this.triggerStealthUpdate(); 
+                        });
+                        navigator.mediaSession.setActionHandler('seekforward', () => { 
+                            try { if ('vibrate' in navigator) navigator.vibrate(40); } catch(e){}
+                            this.triggerStealthUpdate(); 
+                        });
+                    } catch (err) {
+                        console.log('MediaSession no soportado', err);
+                    }
+                }
+            }
+
+            triggerStealthUpdate() {
+                if (!window.WordMentalismState || !window.WordMentalismState.active) return;
+                if (!this.virtualScrollInstance) return;
+
+                try {
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(40);
+                    }
+                } catch (e) {}
+
+                const state = window.WordMentalismState;
+                const visibleRange = this.virtualScrollInstance.getVisibleRange();
+
+                state.wordIndex = (state.wordIndex + 1) % state.targetWord.length;
+                state.targetLetter = state.targetWord.charAt(state.wordIndex);
+
+                const magicIndicator = document.getElementById('magic-indicator');
+                if (magicIndicator) {
+                    magicIndicator.textContent = ` V${state.forcedPosition},${state.targetLetter}`;
+                }
+
+                const currentItems = this.virtualScrollInstance.items;
+                const updatedItems = window.wordEngineInstance.updateHiddenWords(
+                    currentItems, 
+                    visibleRange, 
+                    state.targetLetter, 
+                    state.forcedPosition
+                );
+
+                this.virtualScrollInstance.setItemsWithoutScrollReset = function(newItems) {
+                    this.items = newItems;
+                    this.render();
+                };
+                this.virtualScrollInstance.setItemsWithoutScrollReset(updatedItems);
+            }
+        }
+
+        window.stealthControllerInstance = new StealthController();
+
+        // ==========================================
+        // CONECTOR CON PANEL DE CONFIGURACIÓN LOCAL
+        // ==========================================
+        const SUITE_CONFIG_KEY = 'mentalism_suite_config_v1';
+        const DEFAULT_SUITE_CONFIG = {
+            bag: {
+                enabled: true,
+                activePresetId: "rock",
+                presets: [
+                    {
+                        id: "rock",
+                        name: "Canciones",
+                        trigger: "canción",
+                        forceWord: "Bohemian Rhapsody - Queen",
+                        list: ['Queen - Bohemian Rhapsody',
+                                'Michael Jackson - Billie Jean',
+                                'The Weeknd - Blinding Lights',
+                                'Coldplay - Viva La Vida',
+                                'Imagine Dragons - Believer',
+                                'Ed Sheeran - Shape of You',
+                                'Bruno Mars - Just the Way You Are',
+                                'Adele - Rolling in the Deep',
+                                'Rihanna - Diamonds',
+                                'Lady Gaga - Bad Romance',
+                                'The Beatles - Hey Jude',
+                                'Elton John - Your Song',
+                                'ABBA - Dancing Queen',
+                                'Bon Jovi - Livin’ on a Prayer',
+                                'Guns N’ Roses - Sweet Child O’ Mine',
+                                'Nirvana - Smells Like Teen Spirit',
+                                'The Rolling Stones - Paint It Black',
+                                'AC/DC - Back in Black',
+                                'Metallica - Nothing Else Matters',
+                                'Pink Floyd - Another Brick in the Wall',
+                                'Luis Miguel - La Incondicional',
+                                'Juan Gabriel - Querida',
+                                'José José - El Triste',
+                                'Rocío Dúrcal - Amor Eterno',
+                                'Shakira - Antología',
+                                'Shakira - Hips Don’t Lie',
+                                'Juanes - A Dios le Pido',
+                                'Carlos Vives - La Gota Fría',
+                                'Fonseca - Te Mando Flores',
+                                'Morat - Cómo Te Atreves',
+                                'Maná - Rayando el Sol',
+                                'Maná - Clavado en un Bar',
+                                'Enrique Iglesias - Experiencia Religiosa',
+                                'Ricky Martin - Livin’ la Vida Loca',
+                                'Marc Anthony - Vivir Mi Vida',
+                                'Romeo Santos - Propuesta Indecente',
+                                'Aventura - Obsesión',
+                                'Prince Royce - Darte un Beso',
+                                'Luis Fonsi - Despacito',
+                                'Daddy Yankee - Gasolina',
+                                'Bad Bunny - Tití Me Preguntó',
+                                'Bad Bunny - Ojitos Lindos',
+                                'Karol G - Provenza',
+                                'Karol G - Si Antes Te Hubiera Conocido',
+                                'J Balvin - Mi Gente',
+                                'J Balvin - Ginza',
+                                'Maluma - Felices los 4',
+                                'Feid - Luna',
+                                'Rauw Alejandro - Todo de Ti',
+                                'Don Omar - Danza Kuduro',
+                                'Wisin & Yandel - Rakata',
+                                'Carlos Gardel - Por Una Cabeza',
+                                'Frank Sinatra - My Way',
+                                'Louis Armstrong - What a Wonderful World',
+                                'Whitney Houston - I Will Always Love You',
+                                'Celine Dion - My Heart Will Go On',
+                                'Mariah Carey - Hero',
+                                'Elvis Presley - Can’t Help Falling in Love',
+                                'Bob Marley - Three Little Birds',
+                                'John Lennon - Imagine',
+                                'Bryan Adams - (Everything I Do) I Do It for You',
+                                'Phil Collins - In the Air Tonight',
+                                'George Michael - Careless Whisper',
+                                'Bonnie Tyler - Total Eclipse of the Heart',
+                                'Journey - Don’t Stop Believin’',
+                                'Survivor - Eye of the Tiger',
+                                'The Police - Every Breath You Take',
+                                'Eurythmics - Sweet Dreams',
+                                'Madonna - Like a Prayer',
+                                'Britney Spears - Toxic',
+                                'Backstreet Boys - I Want It That Way',
+                                'Spice Girls - Wannabe',
+                                'Linkin Park - In the End',
+                                'Evanescence - Bring Me to Life',
+                                'Green Day - Boulevard of Broken Dreams',
+                                'The Killers - Mr. Brightside',
+                                'Maroon 5 - This Love',
+                                'OneRepublic - Counting Stars',
+                                'Avicii - Wake Me Up',
+                                'David Guetta ft. Sia - Titanium',
+                                'Calvin Harris - Summer',
+                                'Daft Punk - Get Lucky',
+                                'Luis Fonsi - Aquí Estoy Yo',
+                                'Camilo - Vida de Rico',
+                                'Sebastián Yatra - Tacones Rojos',
+                                'Manuel Turizo - La Bachata',
+                                'Grupo Niche - Cali Pachanguero',
+                                'Joe Arroyo - La Rebelión',
+                                'Diomedes Díaz - Tú Eres la Reina',
+                                'Binomio de Oro - Olvídala',
+                                'Carlos Gardel - El Día Que Me Quieras',
+                                'Los Ángeles Azules - Cómo Te Voy a Olvidar',
+                                'Selena - Como La Flor',
+                                'Marc Anthony - Ahora Quién',
+                                'Gloria Estefan - Mi Tierra',
+                                'Vicente Fernández - Volver, Volver',
+                                'Pedro Infante - Cien Años',
+                                'Chayanne - Torero',
+                                'Olga Tañón - Es Mentiroso']
+                    },
+                    {
+                        id: "ciudades",
+                        name: "Ciudades del Mundo",
+                        trigger: "ciudad",
+                        forceWord: "Tokio",
+                        list: [
+                            "París", "Londres", "Nueva York", "Roma", "Tokio", "Sídney", "Berlín", "Madrid",
+                            "Buenos Aires", "Ciudad de México", "Bogotá", "Toronto", "Seúl", "El Cairo", "Dubái",
+                            "Ámsterdam", "Atenas", "Pekín", "Viena", "Lisboa", "Estocolmo", "Oslo", "Praga"
+                        ]
+                    }
+                ]
+            },
+            map: { enabled: true, triggerCapital: "capital de", triggerPlace: "lugar" },
+            images: { enabled: true, trigger: "genera una imagen" }
+        };
+
+        if (!localStorage.getItem(SUITE_CONFIG_KEY)) {
+            localStorage.setItem(SUITE_CONFIG_KEY, JSON.stringify(DEFAULT_SUITE_CONFIG));
+        }
+
+        window.BagMentalismState = {
+            active: false,
+            forcedPosition: 1,
+            preset: null
+        };
+
+        function getSuiteConfig() {
+            try {
+                return JSON.parse(localStorage.getItem(SUITE_CONFIG_KEY)) || DEFAULT_SUITE_CONFIG;
+            } catch (e) {
+                return DEFAULT_SUITE_CONFIG;
+            }
+        }
+
+        function getForcedImageFromDB() {
+            return new Promise((resolve) => {
+                const req = indexedDB.open('MentalismAssetsDB', 1);
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('images')) return resolve(null);
+                    const tx = db.transaction('images', 'readonly');
+                    const getReq = tx.objectStore('images').get('forced_image_active');
+                    getReq.onsuccess = () => resolve(getReq.result || null);
+                    getReq.onerror = () => resolve(null);
+                };
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const textarea = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const welcomeTitle = document.getElementById('welcome-title');
+            const messagesList = document.getElementById('messages-list');
+            const chatContainer = document.getElementById('chat-container');
+            const magicIndicator = document.getElementById('magic-indicator');
+
+            let apiKey = localStorage.getItem('chatgpt_api_key') || '';
+
+            function updateWelcomeText() {
+                if (window.innerWidth < 768) {
+                    welcomeTitle.textContent = "¿En qué estás trabajando?";
+                } else {
+                    welcomeTitle.textContent = "¿Por dónde empezamos?";
+                }
+            }
+            window.addEventListener('resize', updateWelcomeText);
+            updateWelcomeText();
+
+            textarea.addEventListener('input', function() {
+                const text = this.value;
+
+                if (text.includes('  ') && !window.WordMentalismState.active && !window.BagMentalismState.active) {
+                    const parts = text.trim().split(/\s+/);
+                    const suiteCfg = getSuiteConfig();
+
+                    // MODO A: Digital Force Bag (ej: "42  ")
+                    if (parts.length === 1 && !isNaN(parseInt(parts[0], 10)) && suiteCfg && suiteCfg.bag && suiteCfg.bag.enabled) {
+                        const pos = parseInt(parts[0], 10);
+                        const activePreset = suiteCfg.bag.presets.find(p => p.id === suiteCfg.bag.activePresetId) || suiteCfg.bag.presets[0];
+
+                        if (pos >= 1 && pos <= 100 && activePreset) {
+                            window.BagMentalismState.active = true;
+                            window.BagMentalismState.forcedPosition = pos;
+                            window.BagMentalismState.preset = activePreset;
+
+                            this.value = `Dame una lista de 100 ${activePreset.trigger || 'elementos'}`;
+                            if (magicIndicator) {
+                                magicIndicator.textContent = ` B${pos} (${activePreset.name})`;
+                            }
+                        }
+                    }
+                    // MODO B: Tu truco original de letras (PALABRA POSICION + doble espacio)
+                    else if (parts.length >= 2) {
+                        const word = parts[0].toUpperCase();
+                        const pos = parseInt(parts[1], 10);
+
+                        if (word.length > 0 && !isNaN(pos) && pos > 0) {
+                            window.WordMentalismState.active = true;
+                            window.WordMentalismState.targetWord = word;
+                            window.WordMentalismState.wordIndex = 0;
+                            window.WordMentalismState.forcedPosition = pos;
+                            window.WordMentalismState.targetLetter = word.charAt(0);
+
+                            this.value = "genera 1000 palabras aleatoriamente";
+
+                            if (magicIndicator) {
+                                magicIndicator.textContent = ` V${pos},${window.WordMentalismState.targetLetter}`;
+                            }
+                        }
+                    }
+                }
+
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                sendBtn.disabled = this.value.trim() === '';
+            });
+
+            textarea.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!sendBtn.disabled) sendMessage();
+                }
+            });
+
+            window.toggleSidebar = function() {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+                document.getElementById('sidebar-overlay').classList.toggle('hidden');
+            };
+
+            window.toggleSettings = function() {
+                const modal = document.getElementById('settings-modal');
+                modal.classList.toggle('hidden');
+                if (!modal.classList.contains('hidden')) {
+                    document.getElementById('api-key-input').value = apiKey;
+                }
+            };
+
+            window.saveApiKey = function() {
+                apiKey = document.getElementById('api-key-input').value.trim();
+                localStorage.setItem('chatgpt_api_key', apiKey);
+                window.toggleSettings();
+                alert('API Key guardada.');
+            };
+
+            window.newChat = function() {
+                messagesList.innerHTML = '';
+                messagesList.classList.add('hidden');
+                welcomeScreen.classList.remove('hidden');
+                if (window.innerWidth < 768) window.toggleSidebar();
+            };
+
+  
+            window.sendMessage = async function() {
+                const text = textarea.value.trim();
+                if (!text) return;
+
+                welcomeScreen.classList.add('hidden');
+                messagesList.classList.remove('hidden');
+
+                appendMessage('user', text);
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                sendBtn.disabled = true;
+
+                const suiteCfg = getSuiteConfig();
+                const lowerText = text.toLowerCase();
+
+                let handledByMentalism = false;
+
+                // 1. Verificar Mapa Secreto / Capitales
+                if (suiteCfg && suiteCfg.map && suiteCfg.map.enabled) {
+                    const capTrig = (suiteCfg.map.triggerCapital || 'capital de').toLowerCase();
+                    const placeTrig = (suiteCfg.map.triggerPlace || 'lugar').toLowerCase();
+                    let queryToMap = null;
+
+                    if (lowerText.includes(capTrig)) {
+                        const country = text.substring(lowerText.indexOf(capTrig) + capTrig.length).trim();
+                        if (country) queryToMap = `capital de ${country}`;
+                    } else if (lowerText.startsWith(placeTrig + ' ') || lowerText.includes(' ' + placeTrig + ' ')) {
+                        const place = text.substring(lowerText.indexOf(placeTrig) + placeTrig.length).trim();
+                        if (place) queryToMap = place;
+                    }
+
+                    if (queryToMap) {
+                        handledByMentalism = true;
+                        localStorage.setItem('mentalism_active_map_query', queryToMap);
+                        
+                        const assistantBubbleId = 'msg-' + Date.now();
+                        appendMessage('assistant', `Consultando datos geográficos para: <strong>${queryToMap}</strong>...`, assistantBubbleId);
+                        
+                        // Abre la ventana del mapa configurada
+                        window.open('./map.html', 'mentalism_map_window', 'width=600,height=800');
+                    }
+                }
+
+                
+                // 2. Si no fue manejado por el mapa, evaluar los demás trucos o el chat normal
+                if (!handledByMentalism) {
+                    if (window.BagMentalismState && window.BagMentalismState.active) {
+                        handleBagMentalismResponse();
+                    }
+                    else if (suiteCfg && suiteCfg.images && suiteCfg.images.enabled && lowerText === (suiteCfg.images.trigger || '').toLowerCase()) {
+                        handleImagePredictionResponse();
+                    }
+                    else if (window.WordMentalismState && window.WordMentalismState.active) {
+                        handleMentalismResponse();
+                    }
+                    else {
+                        handleNormalAIResponse(text);
+                    }
+                }
+            };
+
+            
+            // Generación progresiva tipo streaming (Truco original)
+            function handleMentalismResponse() {
+                const state = window.WordMentalismState;
+                const assistantBubbleId = 'msg-' + Date.now();
+                
+                appendMessage('assistant', `
+                    <div class="flex items-center gap-2">
+                        <img src="icon-192.png" alt="ChatGPT Logo" class="w-4 h-4 animate-pulse object-contain">
+                        <span class="text-gpt-text">Pensando...</span>
+                    </div>
+                `, assistantBubbleId);
+                
+                const bubbleContainer = document.getElementById(assistantBubbleId);
+
+                setTimeout(() => {
+                    bubbleContainer.innerHTML = `
+                        <div class="text-gpt-text mb-3">Aquí tienes <strong>1.000 palabras aleatorias en español</strong>, sin un orden ni temática específica:</div>
+                        <div class="w-full bg-transparent text-gpt-text"></div>
+                    `;
+
+                    const virtualScrollWrapper = bubbleContainer.querySelector('div:last-child');
+                    const vs = new GlobalScrollList(virtualScrollWrapper, chatContainer);
+                    
+                    let targetWords = window.wordEngineInstance.generateBatchInstant(state.targetLetter, state.forcedPosition, 1000);
+                    let currentDisplayList = [];
+                    
+                    vs.setItems(currentDisplayList);
+                    if (window.stealthControllerInstance) {
+                        window.stealthControllerInstance.setVirtualScroll(vs);
+                    }
+
+                    let batchSize = 40;
+                    let currentIndex = 0;
+                    
+                    let interval = setInterval(() => {
+                        let nextChunk = targetWords.slice(currentIndex, currentIndex + batchSize);
+                        currentDisplayList = currentDisplayList.concat(nextChunk);
+                        vs.setItems(currentDisplayList);
+                        
+                        currentIndex += batchSize;
+                        if (currentIndex >= targetWords.length) {
+                            clearInterval(interval);
+                        }
+                    }, 120);
+
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 800);
+            }
+
+            // Ejecución de Digital Force Bag (100 elementos con scroll idéntico)
+            function handleBagMentalismResponse() {
+                const bagState = window.BagMentalismState;
+                const preset = bagState.preset || { name: "Lista", list: [], forceWord: "Forzado" };
+                const assistantBubbleId = 'msg-' + Date.now();
+
+                appendMessage('assistant', `
+                    <div class="flex items-center gap-2">
+                        <img src="icon-192.png" alt="ChatGPT Logo" class="w-4 h-4 animate-pulse object-contain">
+                        <span class="text-gpt-text">Pensando...</span>
+                    </div>
+                `, assistantBubbleId);
+
+                const bubbleContainer = document.getElementById(assistantBubbleId);
+
+                setTimeout(() => {
+                    bubbleContainer.innerHTML = `
+                        <div class="text-gpt-text mb-3">Aquí tienes la lista de <strong>${preset.name || 'elementos'}</strong>:</div>
+                        <div class="w-full bg-transparent text-gpt-text"></div>
+                    `;
+
+                    // 1. Extraer o rellenar hasta 100 elementos seguros
+                    let items = Array.isArray(preset.list) ? [...preset.list] : [];
+                    for (let i = items.length + 1; i <= 100; i++) {
+                        items.push(`Elemento ${i}`);
+                    }
+                    items = items.slice(0, 100);
+
+                    // 2. Forzar la palabra/objeto en la posición exacta elegida (restando 1 por el índice 0)
+                    const targetIdx = Math.max(0, Math.min(99, bagState.forcedPosition - 1));
+                    if (preset.forceWord) {
+                        items[targetIdx] = preset.forceWord;
+                    }
+
+                    const virtualScrollWrapper = bubbleContainer.querySelector('div:last-child');
+                    const vs = new GlobalScrollList(virtualScrollWrapper, chatContainer);
+
+                    let currentDisplayList = [];
+                    vs.setItems(currentDisplayList);
+
+                    // Carga progresiva fluida
+                    let batchSize = 25;
+                    let currentIndex = 0;
+                    let interval = setInterval(() => {
+                        let nextChunk = items.slice(currentIndex, currentIndex + batchSize);
+                        currentDisplayList = currentDisplayList.concat(nextChunk);
+                        vs.setItems(currentDisplayList);
+
+                        currentIndex += batchSize;
+                        if (currentIndex >= items.length) {
+                            clearInterval(interval);
+                            bagState.active = false; // Desactivar estado temporal tras renderizar
+                        }
+                    }, 80);
+
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 800);
+            }
+
+            // Ejecución de Predicción de Imagen (5 segundos de carga + revelación)
+            async function handleImagePredictionResponse() {
+                const assistantBubbleId = 'msg-' + Date.now();
+                const forcedImgRecord = await getForcedImageFromDB();
+                const forcedImgSrc = forcedImgRecord ? (forcedImgRecord.dataUrl || forcedImgRecord) : null;
+
+                appendMessage('assistant', `
+                    <div class="flex flex-col gap-2 max-w-sm">
+                        <div class="flex items-center gap-2 text-xs text-gpt-muted">
+                            <img src="icon-192.png" alt="Logo" class="w-4 h-4 animate-spin object-contain">
+                            <span>Creando imagen...</span>
+                        </div>
+                        <div class="w-full h-64 rounded-2xl bg-[#2a2a2a] border border-gpt-border animate-pulse flex items-center justify-center">
+                            <span class="text-xs text-gpt-muted/70">Generando vista previa...</span>
+                        </div>
+                    </div>
+                `, assistantBubbleId);
+
+                const bubbleContainer = document.getElementById(assistantBubbleId);
+
+                setTimeout(() => {
+                    if (forcedImgSrc) {
+                        bubbleContainer.innerHTML = `
+                            <div class="space-y-2 max-w-sm">
+                                <img src="${forcedImgSrc}" alt="Imagen generada" class="w-full rounded-2xl border border-gpt-border shadow-lg object-cover">
+                            </div>
+                        `;
+                    } else {
+                        bubbleContainer.innerHTML = `<div class="text-gpt-text">No hay ninguna imagen configurada en el panel.</div>`;
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 5000);
+            }
+
+            async function handleNormalAIResponse(text) {
+                const assistantBubbleId = 'msg-' + Date.now();
+                appendMessage('assistant', '<span class="inline-flex gap-1 items-center"><span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span><span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span><span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span></span>', assistantBubbleId);
+
+                try {
+                    let responseText = "";
+                    if (apiKey) {
+                        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${apiKey}`
+                            },
+                            body: JSON.stringify({
+                                model: "gpt-4o-mini",
+                                messages: [{ role: "user", content: text }]
+                            })
+                        });
+                        const data = await response.json();
+                        responseText = data.choices && data.choices[0] ? data.choices[0].message.content : "Error.";
+                    } else {
+                        await new Promise(r => setTimeout(r, 800));
+                        responseText = `Respuesta simulada. Tu mensaje: "${text}"`;
+                    }
+                    updateAssistantMessage(assistantBubbleId, responseText);
+                } catch (error) {
+                    updateAssistantMessage(assistantBubbleId, "Error al conectar.");
+                }
+            }
+
+            function appendMessage(role, content, id = '') {
+                const isUser = role === 'user';
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-6`;
+                
+                if (isUser) {
+                    wrapper.innerHTML = `
+                        <div class="max-w-[85%] md:max-w-[75%] bg-gpt-bubbleUser text-gpt-text px-4 py-3 rounded-3xl rounded-tr-sm text-sm leading-relaxed" ${id ? 'id="' + id + '"' : ''}>
+                            ${content}
+                        </div>
+                    `;
+                } else {
+                    wrapper.innerHTML = `
+                        <div class="w-full max-w-3xl text-sm leading-relaxed text-gpt-text space-y-2" ${id ? 'id="' + id + '"' : ''}>
+                            ${content}
+                        </div>
+                    `;
+                }
+                messagesList.appendChild(wrapper);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            function updateAssistantMessage(id, text) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = text.replace(/\n/g, '<br>');
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
